@@ -113,7 +113,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .caption{background:#000;color:#e6dfc6;text-align:center;font-size:15px;padding:14px 18px 16px;letter-spacing:.02em}
 .pp{animation:br 5s ease-in-out infinite alternate}@keyframes br{to{transform:translateY(1.6px)}}
 .rain{animation:rain .45s linear infinite}@keyframes rain{to{transform:translateY(28px)}}
-.bolt{animation:bolt 11s infinite}@keyframes bolt{0%,90%,100%{opacity:0}91%{opacity:.4}92%{opacity:.04}93%{opacity:.3}95%{opacity:0}}
+.bolt{opacity:0;animation:bolt 11s infinite}@keyframes bolt{0%,90%,100%{opacity:0}91%{opacity:.4}92%{opacity:.04}93%{opacity:.3}95%{opacity:0}}
 .flick{animation:flick 2.3s ease-in-out infinite alternate}@keyframes flick{from{opacity:.78}to{opacity:1}}
 .dust{animation:dust 9s ease-in-out infinite alternate}@keyframes dust{to{transform:translate(14px,-18px)}}
 .grain{animation:grain .4s steps(3) infinite}@keyframes grain{33%{transform:translate(-2px,1px)}66%{transform:translate(1px,-2px)}}

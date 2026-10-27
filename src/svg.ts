@@ -18,7 +18,7 @@ function FX(id: SceneId): string {
  L.forEach(function(l,i){o+='<circle cx="'+l[0]+'" cy="'+l[1]+'" r="'+l[2]+'" fill="url(#l'+i+')" style="mix-blend-mode:screen" class="'+(i?'':'flick')+'"/>'});
  if(id==='esc')o+='<g clip-path="url(#wc)"><rect class="rain" x="-20" y="-30" width="170" height="170" fill="url(#rn)"/></g>';
  for(var i=0;i<7;i++)o+='<circle class="dust" cx="'+((i*53+id.length*17)%340+10)+'" cy="'+((i*37+40)%150+30)+'" r="'+(.8+(i%3)*.3)+'" fill="#ffe3b0" opacity=".5" style="mix-blend-mode:screen;animation-delay:-'+(i*1.3)+'s"/>';
- o+='<rect width="360" height="220" fill="url(#fg)"/><rect class="bolt" width="360" height="220" fill="#dfeaff" style="mix-blend-mode:screen"/><rect width="360" height="220" fill="url(#vg)"/>'+
+ o+='<rect width="360" height="220" fill="url(#fg)"/><rect class="bolt" opacity="0" width="360" height="220" fill="#dfeaff" style="mix-blend-mode:screen"/><rect width="360" height="220" fill="url(#vg)"/>'+
  '<rect class="grain" x="-4" y="-4" width="368" height="228" filter="url(#gr)" opacity=".16" style="mix-blend-mode:overlay"/>'+
  '<rect width="360" height="20" fill="#000"/><rect y="200" width="360" height="20" fill="#000"/>'+
  '<text x="14" y="213" font-size="8" letter-spacing="1.6" fill="#cfc7ac" opacity=".75" style="font-family:var(--display)">'+sceneName(id).toUpperCase()+' · '+(TAG[id]||'NOITE DE CHUVA')+'</text>';
