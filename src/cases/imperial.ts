@@ -88,21 +88,21 @@ const SUS: Suspect[] = [
 ]
 
 const CLUES: Clue[] = [
-  { id: 'c1', sc: 'pal', t: 'Trava da varanda técnica', x: 'Os parafusos da trava da grade foram retirados e deixados no chão, com marcas de chave de fenda. A grade cedeu ao primeiro peso.' },
-  { id: 'c2', sc: 'pal', t: 'Programa da estreia', x: 'Programa dobrado, com a letra de Sérgio: "Otávio, 22h45, urdimento. Traga o livro-caixa. Chega de desculpas."' },
-  { id: 'c3', sc: 'cam', t: 'Contrato da turnê', x: 'Contrato da turnê nacional já assinado: o papel principal passa de Lívia Duarte para Débora Reis. Sérgio ia avisar o elenco depois da estreia.' },
-  { id: 'c4', sc: 'cam', t: 'Folha de chamadas', x: 'Folha da contrarregra, assinada pelas atrizes: 22h35 camarim 1, 22h42 camarim 3, 22h50 camarim 2. Nilza esteve no corredor leste o tempo todo.' },
-  { id: 'c5', sc: 'bil', t: 'Borderô da estreia', x: 'Ingressos vendidos: 412. Valor declarado no caixa: 287. A diferença de 125 ingressos não aparece em lugar nenhum. Assinado: O. Brandt.' },
-  { id: 'c6', sc: 'bil', t: 'Notificação de cobrança', x: 'Aviso em nome da Brandt Produções: dívida de R$ 1,2 milhão com prazo vencendo na sexta, sob risco de penhora do teatro.' },
-  { id: 'c7', sc: 'cab', t: 'Câmera de serviço', x: 'Às 22h32, Otávio Brandt entra na coxia com a maleta de manutenção. Sai às 22h58, sem a maleta.' },
-  { id: 'c8', sc: 'cab', t: 'Diário de luz de Caio', x: 'Cue a cue, anotado à mão: ele não saiu da cabine entre 22h e 23h. Na última página: "Demitido hoje. Faço o show até o fim."' },
+  { id: 'c1', sc: 'imp_pal', t: 'Trava da varanda técnica', x: 'Os parafusos da trava da grade foram retirados e deixados no chão, com marcas de chave de fenda. A grade cedeu ao primeiro peso.' },
+  { id: 'c2', sc: 'imp_pal', t: 'Programa da estreia', x: 'Programa dobrado, com a letra de Sérgio: "Otávio, 22h45, urdimento. Traga o livro-caixa. Chega de desculpas."' },
+  { id: 'c3', sc: 'imp_cam', t: 'Contrato da turnê', x: 'Contrato da turnê nacional já assinado: o papel principal passa de Lívia Duarte para Débora Reis. Sérgio ia avisar o elenco depois da estreia.' },
+  { id: 'c4', sc: 'imp_cam', t: 'Folha de chamadas', x: 'Folha da contrarregra, assinada pelas atrizes: 22h35 camarim 1, 22h42 camarim 3, 22h50 camarim 2. Nilza esteve no corredor leste o tempo todo.' },
+  { id: 'c5', sc: 'imp_bil', t: 'Borderô da estreia', x: 'Ingressos vendidos: 412. Valor declarado no caixa: 287. A diferença de 125 ingressos não aparece em lugar nenhum. Assinado: O. Brandt.' },
+  { id: 'c6', sc: 'imp_bil', t: 'Notificação de cobrança', x: 'Aviso em nome da Brandt Produções: dívida de R$ 1,2 milhão com prazo vencendo na sexta, sob risco de penhora do teatro.' },
+  { id: 'c7', sc: 'imp_cab', t: 'Câmera de serviço', x: 'Às 22h32, Otávio Brandt entra na coxia com a maleta de manutenção. Sai às 22h58, sem a maleta.' },
+  { id: 'c8', sc: 'imp_cab', t: 'Diário de luz de Caio', x: 'Cue a cue, anotado à mão: ele não saiu da cabine entre 22h e 23h. Na última página: "Demitido hoje. Faço o show até o fim."' },
 ]
 
 const SC: Record<string, SceneData> = {
-  cam: { n: 'Camarim', d: 'Lâmpadas acesas, espelho embaçado, perfume doce de pó de arroz. A estrela jura que não saiu daqui.', h: [['c3', 150, 128], ['c4', 53, 70]] },
-  pal: { n: 'Palco', d: 'Tablado frio, cortinas ainda balançando. Sérgio Prado caiu da varanda técnica e foi achado aqui às 23h05.', h: [['c1', 238, 56], ['c2', 250, 184]] },
-  bil: { n: 'Bilheteria', d: 'O guichê onde se conta a noite. Casa cheia, caixa magro.', h: [['c5', 130, 114], ['c6', 326, 126]] },
-  cab: { n: 'Cabine de luz', d: 'Painéis, faders e uma tela de serviço. Daqui se enxerga tudo, e se apaga tudo.', h: [['c7', 314, 124], ['c8', 108, 116]] },
+  imp_cam: { n: 'Camarim', d: 'Lâmpadas acesas, espelho embaçado, perfume doce de pó de arroz. A estrela jura que não saiu daqui.', h: [['c3', 150, 128], ['c4', 53, 70]] },
+  imp_pal: { n: 'Palco', d: 'Tablado frio, cortinas ainda balançando. Sérgio Prado caiu da varanda técnica e foi achado aqui às 23h05.', h: [['c1', 238, 56], ['c2', 250, 184]] },
+  imp_bil: { n: 'Bilheteria', d: 'O guichê onde se conta a noite. Casa cheia, caixa magro.', h: [['c5', 130, 114], ['c6', 326, 126]] },
+  imp_cab: { n: 'Cabine de luz', d: 'Painéis, faders e uma tela de serviço. Daqui se enxerga tudo, e se apaga tudo.', h: [['c7', 314, 124], ['c8', 108, 116]] },
 }
 
 export const imperial: Case = {
@@ -117,7 +117,7 @@ export const imperial: Case = {
   synopsis:
     'Noite de estreia no Teatro Imperial. O diretor é achado morto sob a varanda técnica. Parecia acidente, até alguém conferir os números da noite.',
   place: 'Teatro Imperial',
-  bg: 'pal',
+  bg: 'imp_pal',
   suspectsLabel: 'Quatro pessoas conheciam os bastidores',
   suspects: SUS,
   clues: CLUES,

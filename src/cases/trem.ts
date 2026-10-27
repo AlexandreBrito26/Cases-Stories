@@ -77,10 +77,10 @@ const CLUES: Clue[] = [
 ]
 
 const SC: Record<string, SceneData> = {
-  vag: { n: 'Vagão-restaurante', d: 'Mesas de linho, taças e cheiro de café frio. Renato jantou aqui antes de subir para a cabine.', h: [['c1', 110, 118], ['c2', 260, 120]] },
-  cab: { n: 'Cabine 7', d: 'Cama estreita, janela embaçada e a pasta do executivo aberta. Renato foi achado aqui às 3h.', h: [['c3', 260, 118], ['c4', 110, 115]] },
-  pla: { n: 'Plataforma', d: 'A parada de madrugada, com luzes fracas e um vendedor fechando a barraca.', h: [['c5', 220, 130], ['c6', 90, 150]] },
-  loc: { n: 'Locomotiva', d: 'Manômetros, alavancas e a caldeira em silêncio. O maquinista nunca deixa o posto durante a viagem.', h: [['c7', 180, 100], ['c8', 260, 120]] },
+  vag: { n: 'Vagão-restaurante', d: 'Mesas de linho, taças e cheiro de café frio. Renato jantou aqui antes de subir para a cabine.', h: [['c1', 50, 106], ['c2', 262, 142]] },
+  cab: { n: 'Cabine 7', d: 'Cama estreita, janela embaçada e a pasta do executivo aberta. Renato foi achado aqui às 3h.', h: [['c3', 266, 121], ['c4', 128, 106]] },
+  pla: { n: 'Plataforma', d: 'A parada de madrugada, com luzes fracas e um vendedor fechando a barraca.', h: [['c5', 250, 118], ['c6', 92, 175]] },
+  loc: { n: 'Locomotiva', d: 'Manômetros, alavancas e a caldeira em silêncio. O maquinista nunca deixa o posto durante a viagem.', h: [['c7', 182, 94], ['c8', 270, 134]] },
 }
 
 export const trem: Case = {

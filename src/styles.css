@@ -397,3 +397,31 @@ html[data-motion="on"] .sheet{animation:rise .35s ease both}
 .hot.hidden .dot{opacity:.18}
 .lock-desafio{opacity:.6}
 .capitulo{margin:14px 0 6px;font-family:var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--brass);font-size:13px}
+
+/* ===== Fundo animado (menu principal e pausa) — ver Backdrop.tsx ===== */
+.bd .bd-slide{position:absolute;inset:0;overflow:hidden}
+.bd .bd-slide>svg{transform-origin:55% 60%}
+.bd.live .bd-slide>svg{animation:bddrift 38s ease-in-out infinite alternate}
+.bd .bd-slide.in{animation:bdin 2s ease both}
+.bd .bd-slide.out{animation:bdout 2s ease both}
+@keyframes bddrift{from{transform:scale(1.04) translate3d(-1.2%,.6%,0)}to{transform:scale(1.15) translate3d(1.4%,-1%,0)}}
+@keyframes bdin{from{opacity:0}to{opacity:1}}
+@keyframes bdout{from{opacity:1}to{opacity:0}}
+.bd.live::after{display:none}
+.bd-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.bd-fog{position:absolute;left:-50%;width:200%;z-index:1;pointer-events:none;opacity:calc(var(--bd-fog,.5)*.55);mix-blend-mode:screen;
+  background:radial-gradient(ellipse 22% 50% at 20% 50%,rgba(var(--bd-fogc,170,190,200),.55),transparent 70%),radial-gradient(ellipse 26% 45% at 62% 55%,rgba(var(--bd-fogc,170,190,200),.45),transparent 70%),radial-gradient(ellipse 18% 40% at 90% 48%,rgba(var(--bd-fogc,170,190,200),.5),transparent 70%)}
+.bd-fog.a{bottom:-4%;height:46%;animation:bdfog 70s linear infinite alternate}
+.bd-fog.b{bottom:18%;height:34%;opacity:calc(var(--bd-fog,.5)*.35);animation:bdfog 110s linear infinite alternate-reverse}
+@keyframes bdfog{from{transform:translateX(0)}to{transform:translateX(24%)}}
+.bd-warm{position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:screen;background:radial-gradient(ellipse 60% 55% at 50% 62%,rgba(255,190,110,.2),transparent 70%);animation:bdwarm 3.1s ease-in-out infinite alternate}
+@keyframes bdwarm{0%{opacity:.55}35%{opacity:.95}55%{opacity:.7}100%{opacity:1}}
+.bd-bolt{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:0;mix-blend-mode:screen;background:radial-gradient(ellipse at 70% 20%,#e8f0ff,#9db8e0 40%,transparent 80%)}
+.bd-bolt.go{animation:bdbolt 1.3s linear 1}
+@keyframes bdbolt{0%{opacity:0}4%{opacity:.7}9%{opacity:.08}14%{opacity:.55}22%{opacity:.04}40%{opacity:.18}100%{opacity:0}}
+.bd-beam{position:absolute;right:-30%;top:-40%;width:160%;height:160%;z-index:1;pointer-events:none;mix-blend-mode:screen;opacity:.5;
+  background:conic-gradient(from 0deg at 62% 38%,rgba(255,240,200,.34),transparent 9%,transparent 91%,rgba(255,240,200,.34));animation:bdbeam 14s linear infinite;transform-origin:62% 38%;-webkit-mask-image:radial-gradient(circle at 62% 38%,#000 0,#000 18%,transparent 62%);mask-image:radial-gradient(circle at 62% 38%,#000 0,#000 18%,transparent 62%)}
+@keyframes bdbeam{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.bd .bd-slide>svg,.bd .bd-slide.in,.bd .bd-slide.out{animation:none!important}}
+
+.bd.live::before{background:linear-gradient(#000a,#0004 42%,#000b)}

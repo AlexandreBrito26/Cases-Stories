@@ -6,13 +6,13 @@ type SceneId = string
 /* Gerado a partir do HTML original: as cenas e personagens continuam sendo montados como strings SVG. */
 var LT:Record<string,any[][]>={aad:[[290,60,110,'#ffcf86',.5],[110,110,90,'#ff9f6b',.2]],alg:[[300,110,90,'#9fe0c0',.3],[170,120,110,'#ffd9a0',.35]],aof:[[180,125,110,'#ffd9a0',.5],[310,70,70,'#ffcf86',.25]],apa:[[70,140,100,'#ffe3a0',.45],[292,110,70,'#ffb561',.35]],esc:[[297,175,120,'#ff8a3c',.6],[153,100,90,'#ffcf86',.35]],coz:[[190,40,130,'#ffd9a0',.42],[238,52,70,'#ffd9a0',.2]],bib:[[150,150,120,'#ffc477',.5]],qua:[[151,128,100,'#ffb561',.5],[300,60,90,'#6f9cc0',.22]],
  cam:[[180,70,120,'#ffd9a0',.5],[310,110,70,'#ff9f6b',.2]],pal:[[190,150,130,'#ffe3b0',.5],[300,50,80,'#9fc3d0',.2]],bil:[[180,100,120,'#ffcf86',.42],[326,130,60,'#ffb561',.25]],cab:[[170,125,100,'#ffb561',.4],[300,70,110,'#8fc0e0',.3]]};
-var TAG:Record<string,string>={aad:'COLHEITA · 21H',alg:'COLHEITA · 21H',aof:'COLHEITA · 21H',apa:'COLHEITA · 21H',cam:'ESTREIA · 23H',pal:'ESTREIA · 23H',bil:'ESTREIA · 23H',cab:'ESTREIA · 23H'};
+var TAG:Record<string,string>={aad:'COLHEITA · 21H',alg:'COLHEITA · 21H',aof:'COLHEITA · 21H',apa:'COLHEITA · 21H',cam:'ESTREIA · 23H',pal:'ESTREIA · 23H',bil:'ESTREIA · 23H',imp_cam:'ESTREIA · 23H',imp_pal:'ESTREIA · 23H',imp_bil:'ESTREIA · 23H',imp_cab:'ESTREIA · 23H',gal:'NOITE',res:'NOITE',cof:'NOITE',ter:'NOITE',tor:'TEMPESTADE',cas:'TEMPESTADE',anc:'TEMPESTADE',dep:'TEMPESTADE',vag:'MADRUGADA',cab:'MADRUGADA',pla:'MADRUGADA',loc:'MADRUGADA',esp:'SILÊNCIO',por:'SILÊNCIO',jar:'SILÊNCIO',sot:'SILÊNCIO'};
 function FX(id: SceneId): string {
  var o='<defs><filter id="gr" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="'+(id.length*7)+'"/><feColorMatrix values="0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .9 0"/></filter>'+
  '<radialGradient id="vg" cx=".5" cy=".5" r=".75"><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".85"/></radialGradient>'+
  '<linearGradient id="fg" x1="0" y1="0" x2="0" y2="1"><stop offset=".5" stop-color="#8fb0b8" stop-opacity="0"/><stop offset="1" stop-color="#8fb0b8" stop-opacity=".22"/></linearGradient>'+
  '<pattern id="rn" width="12" height="28" patternUnits="userSpaceOnUse" patternTransform="rotate(14)"><path d="M3 2v12M9 14v10" stroke="#b5d3df" stroke-width="1" opacity=".55"/></pattern><clipPath id="wc"><rect x="28" y="22" width="92" height="82"/></clipPath>';
- var L=LT[id]||ROOM_LT[id]||[];
+ var L=ROOM_LT[id]||LT[id]||[];
  L.forEach(function(l,i){o+='<radialGradient id="l'+i+'"><stop offset="0" stop-color="'+l[3]+'" stop-opacity="'+l[4]+'"/><stop offset=".5" stop-color="'+l[3]+'" stop-opacity="'+(l[4]*.3)+'"/><stop offset="1" stop-color="'+l[3]+'" stop-opacity="0"/></radialGradient>'});
  o+='</defs><rect width="360" height="220" fill="#02080b" opacity=".5"/>';
  L.forEach(function(l,i){o+='<circle cx="'+l[0]+'" cy="'+l[1]+'" r="'+l[2]+'" fill="url(#l'+i+')" style="mix-blend-mode:screen" class="'+(i?'':'flick')+'"/>'});
@@ -215,17 +215,17 @@ export function sceneInner(id: SceneId): string { return scenery(id) }
 const CUTS_IMP: Record<string, CutFrame[]> = {
   intro: [
     { t: 'Teatro Imperial. 23h05.', d: 3200 },
-    { sc: 'pal', t: 'A estreia terminou em aplausos. Vinte minutos depois, o diretor Sérgio Prado estava morto sob a varanda técnica.' },
-    { sc: 'bil', z: 'out', t: 'Casa cheia, caixa suspeito. Alguém precisava que a noite acabasse bem.', p: [{ k: 'ota', x: 178, y: 80, e: 1 }] },
-    { sc: 'cam', t: 'Todos tinham algo a perder com Sérgio.', p: [{ k: 'liv', x: 200, y: 84, s: 0.95, e: 1, r: -6 }] },
-    { sc: 'cab', z: 'out', t: 'A polícia só chega ao amanhecer. Você tem a noite.', p: [{ k: 'cai', x: 96, y: 86 }] },
+    { sc: 'imp_pal', t: 'A estreia terminou em aplausos. Vinte minutos depois, o diretor Sérgio Prado estava morto sob a varanda técnica.' },
+    { sc: 'imp_bil', z: 'out', t: 'Casa cheia, caixa suspeito. Alguém precisava que a noite acabasse bem.', p: [{ k: 'ota', x: 178, y: 80, e: 1 }] },
+    { sc: 'imp_cam', t: 'Todos tinham algo a perder com Sérgio.', p: [{ k: 'liv', x: 200, y: 84, s: 0.95, e: 1, r: -6 }] },
+    { sc: 'imp_cab', z: 'out', t: 'A polícia só chega ao amanhecer. Você tem a noite.', p: [{ k: 'cai', x: 96, y: 86 }] },
     { t: 'O Caso Imperial', d: 3500 },
   ],
   end: [
     { t: 'Madrugada.', d: 3000 },
-    { sc: 'pal', t: 'Sérgio ia auditar a bilheteria na manhã seguinte. Otávio não podia permitir.' },
-    { sc: 'cab', z: 'out', t: 'A câmera de serviço mostrou o que o produtor jurou nunca ter feito.', p: [{ k: 'cai', x: 96, y: 86, e: 1 }] },
-    { sc: 'bil', t: 'O borderô contou o resto: ingressos vendidos, dinheiro que nunca chegou ao cofre.', p: [{ k: 'ota', x: 178, y: 80, r: 8, e: 1 }] },
+    { sc: 'imp_pal', t: 'Sérgio ia auditar a bilheteria na manhã seguinte. Otávio não podia permitir.' },
+    { sc: 'imp_cab', z: 'out', t: 'A câmera de serviço mostrou o que o produtor jurou nunca ter feito.', p: [{ k: 'cai', x: 96, y: 86, e: 1 }] },
+    { sc: 'imp_bil', t: 'O borderô contou o resto: ingressos vendidos, dinheiro que nunca chegou ao cofre.', p: [{ k: 'ota', x: 178, y: 80, r: 8, e: 1 }] },
     { t: 'Caso encerrado', d: 3500 },
   ],
 }

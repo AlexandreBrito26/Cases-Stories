@@ -102,6 +102,7 @@ function init(cs: Case): GameState {
   try {
     const raw = localStorage.getItem(cs.key)
     if (raw) Object.assign(s, JSON.parse(raw))
+    if (!cs.scenes[s.scene]) s.scene = Object.keys(cs.scenes)[0]
   } catch {
     /* localStorage indisponível */
   }

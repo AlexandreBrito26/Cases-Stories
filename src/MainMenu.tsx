@@ -3,6 +3,7 @@ import { exportarProgresso, importarProgresso } from './backup'
 import { CASES } from './cases'
 import { Emblem } from './Logo'
 import { StaticScene } from './Scene'
+import { Backdrop } from './Backdrop'
 import { getLast, peek, resetAll } from './state'
 import { DEFAULTS, type Settings } from './settings'
 import { ACHIEVEMENTS, getAch } from './achievements'
@@ -157,6 +158,12 @@ function Back({ onClick, title }: { onClick: () => void; title: string }) {
   )
 }
 
+/** Carrossel do fundo do menu: começa pelo último caso jogado e passa pelos demais. */
+function menuSlides(lastId?: string) {
+  const i = Math.max(0, CASES.findIndex((c) => c.id === lastId))
+  return CASES.map((_, k) => CASES[(i + k) % CASES.length]).map((c) => ({ id: c.bg, theme: c.id }))
+}
+
 function CaseCard({ cs, onOpen }: { cs: Case; onOpen: (id: string) => void }) {
   const p = peek(cs)
   const st = p.solved ? 'solved' : p.started ? 'open' : 'new'
@@ -200,9 +207,7 @@ export function MainMenu({ view, setView, onOpen, settings, setSettings }: Props
 
   return (
     <>
-      <div className="mbg">
-        <StaticScene id="esc" slice />
-      </div>
+      <Backdrop slides={menuSlides(last?.id)} />
       <Shards />
       <main className="mm" key={view}>
         {view === 'main' && (

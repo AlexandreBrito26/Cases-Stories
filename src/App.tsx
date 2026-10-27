@@ -10,6 +10,7 @@ import { ARQUIVO } from './archive'
 import { registrarVitoria } from './stats'
 import { playTrack, stopTrack } from './music'
 import { Scene, StaticScene } from './Scene'
+import { Backdrop } from './Backdrop'
 import { Portrait, moodOf, type Mood } from './portraits'
 import { CUTS } from './svg'
 import { HINT_MAX, peek, useGame, type Action, type GameState, type LogEntry, type Tab } from './state'
@@ -30,9 +31,7 @@ type D = Dispatch<Action>
 function Menu({ cs, s, d, onHome }: { cs: Case; s: GameState; d: D; onHome: () => void }) {
   return (
     <>
-      <div className="mbg">
-        <StaticScene id={cs.bg} slice />
-      </div>
+      <Backdrop slides={[{ id: cs.bg, theme: cs.id }]} />
       <div className="menu">
         <div className="label">
           Caso nº {cs.no} · {cs.kind}

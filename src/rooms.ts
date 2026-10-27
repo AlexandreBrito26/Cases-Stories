@@ -1,3 +1,10 @@
+import { ROOM_DRAW_000, ROOM_LT_000 } from './rooms000'
+import { ROOM_DRAW_IMP, ROOM_LT_IMP } from './roomsImp'
+import { ROOM_DRAW_AUR, ROOM_LT_AUR } from './roomsAur'
+import { ROOM_DRAW_GAL, ROOM_LT_GAL } from './roomsGal'
+import { ROOM_DRAW_FAR, ROOM_LT_FAR } from './roomsFar'
+import { ROOM_DRAW_TREM, ROOM_LT_TREM } from './roomsTrem'
+import { ROOM_DRAW_SIL, ROOM_LT_SIL } from './roomsSil'
 /* Cômodos desenhados em SVG para os casos 000 (Onde Tudo Começou) e 004 (O Caso Ateliê). */
 const r = (x: number, y: number, w: number, h: number, f: string, o = 1) =>
   `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${f}" opacity="${o}"/>`
@@ -7,44 +14,9 @@ const p = (d: string, f: string, o = 1) => `<path d="${d}" fill="${f}" opacity="
 const base = (wall: string, floor: string) => r(0, 0, 360, 220, wall) + r(0, 150, 360, 70, floor)
 
 export const ROOM_DRAW: Record<string, () => string> = {
-  // Caso 000
-  of_hal: () =>
-    base('#2b3038', '#3a2e25') +
-    r(140, 60, 80, 90, '#120d0a') +
-    e(180, 60, 40, 8, '#1a1410') +
-    p('M250 150 L300 95 L360 95 L360 150 Z', '#4a3a2c') +
-    r(176, 20, 8, 4, '#8a7a5a') +
-    e(180, 34, 22, 6, '#f0d28a', 0.6) +
-    r(120, 172, 120, 40, '#6b2a2a', 0.8),
-  of_jan: () =>
-    base('#3b2a25', '#2a1f1a') +
-    r(50, 118, 260, 12, '#5a3a22') +
-    r(64, 130, 8, 40, '#3d2716') +
-    r(288, 130, 8, 40, '#3d2716') +
-    r(70, 100, 14, 18, '#4a3020') +
-    r(276, 100, 14, 18, '#4a3020') +
-    e(180, 30, 50, 8, '#e8c890', 0.5) +
-    e(120, 112, 3, 5, '#7a1d2d') +
-    e(220, 112, 3, 5, '#7a1d2d'),
-  of_esc: () =>
-    base('#2b3a33', '#24201b') +
-    r(250, 30, 70, 70, '#1c2f3a') +
-    r(20, 40, 60, 110, '#3b2a1a') +
-    r(26, 50, 48, 3, '#6b4a2a') +
-    r(26, 70, 48, 3, '#6b4a2a') +
-    r(26, 90, 48, 3, '#6b4a2a') +
-    r(120, 130, 130, 18, '#4a3320') +
-    e(150, 118, 8, 4, '#ffd27a') +
-    r(136, 148, 6, 22, '#3a2a1a') +
-    r(238, 148, 6, 22, '#3a2a1a'),
-  of_qua: () =>
-    base('#363044', '#241f2e') +
-    e(90, 40, 40, 30, '#8fa8c8', 0.25) +
-    r(60, 120, 150, 30, '#5a4f6e') +
-    r(56, 100, 8, 50, '#3a3146') +
-    r(66, 114, 30, 12, '#d8d0e8') +
-    r(230, 130, 40, 30, '#3a2e22') +
-    r(280, 60, 70, 110, '#2e2638'),
+  ...ROOM_DRAW_000,
+  ...ROOM_DRAW_IMP,
+  ...ROOM_DRAW_AUR,
   // Caso 004 · O Caso Ateliê
   gal: () =>
     base('#1f2430', '#15171c') +
@@ -186,10 +158,9 @@ Object.assign(ROOM_DRAW, {
 
 /** Luzes: [x, y, raio, cor, opacidade], no mesmo formato de LT em svg.ts. */
 export const ROOM_LT: Record<string, any[][]> = {
-  of_hal: [[180, 40, 110, '#ffd9a0', 0.45]],
-  of_jan: [[180, 40, 140, '#ffe0a0', 0.35]],
-  of_esc: [[150, 110, 90, '#ffd27a', 0.4]],
-  of_qua: [[90, 40, 90, '#8fa8c8', 0.25]],
+  ...ROOM_LT_000,
+  ...ROOM_LT_IMP,
+  ...ROOM_LT_AUR,
   gal: [[80, 40, 120, '#fff2c8', 0.3], [260, 40, 120, '#fff2c8', 0.25]],
   res: [[190, 80, 110, '#ffe0a0', 0.35]],
   cof: [[180, 110, 110, '#ffd27a', 0.2]],
@@ -207,3 +178,19 @@ export const ROOM_LT: Record<string, any[][]> = {
   jar: [[180, 40, 130, '#bfe8c8', 0.3]],
   sot: [[300, 40, 80, '#8fa8c8', 0.3]],
 }
+
+// Caso 004 · Galeria: os cômodos cinematográficos substituem os desenhos simples acima.
+Object.assign(ROOM_DRAW, ROOM_DRAW_GAL)
+Object.assign(ROOM_LT, ROOM_LT_GAL)
+
+// Caso 005 · Farol: os cômodos cinematográficos substituem os desenhos simples acima.
+Object.assign(ROOM_DRAW, ROOM_DRAW_FAR)
+Object.assign(ROOM_LT, ROOM_LT_FAR)
+
+// Caso 006 · Trem Noturno: os cômodos cinematográficos substituem os desenhos simples acima.
+Object.assign(ROOM_DRAW, ROOM_DRAW_TREM)
+Object.assign(ROOM_LT, ROOM_LT_TREM)
+
+// Caso 007 · Silêncio: os cômodos cinematográficos substituem os desenhos simples acima.
+Object.assign(ROOM_DRAW, ROOM_DRAW_SIL)
+Object.assign(ROOM_LT, ROOM_LT_SIL)

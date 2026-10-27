@@ -76,10 +76,10 @@ const CLUES: Clue[] = [
 ]
 
 const SC: Record<string, SceneData> = {
-  esp: { n: 'Sala de espelhos', d: 'Espelhos nas quatro paredes e um piano fechado. Lorena ensaiava aqui todas as noites.', h: [['c1', 110, 90], ['c2', 240, 150]] },
-  por: { n: 'Porão', d: 'Caixas de som, o gerador zumbindo e a escada de madeira úmida. Ninguém vem aqui sem motivo.', h: [['c3', 280, 130], ['c4', 80, 130]] },
-  jar: { n: 'Jardim de inverno', d: 'Vidro, calor e plantas úmidas. A estufa é fechada à noite e aberta de manhã.', h: [['c5', 130, 130], ['c6', 280, 150]] },
-  sot: { n: 'Sótão', d: 'Vigas, caixas e o baú de fitas. A luz da janela entra fraca, e o pó marca cada passo.', h: [['c7', 180, 130], ['c8', 90, 130]] },
+  esp: { n: 'Sala de espelhos', d: 'Espelhos nas quatro paredes e um piano fechado. Lorena ensaiava aqui todas as noites.', h: [['c1', 72, 92], ['c2', 288, 90]] },
+  por: { n: 'Porão', d: 'Caixas de som, o gerador zumbindo e a escada de madeira úmida. Ninguém vem aqui sem motivo.', h: [['c3', 300, 150], ['c4', 76, 108]] },
+  jar: { n: 'Jardim de inverno', d: 'Vidro, calor e plantas úmidas. A estufa é fechada à noite e aberta de manhã.', h: [['c5', 204, 114], ['c6', 238, 172]] },
+  sot: { n: 'Sótão', d: 'Vigas, caixas e o baú de fitas. A luz da janela entra fraca, e o pó marca cada passo.', h: [['c7', 186, 116], ['c8', 90, 124]] },
 }
 
 export const silencio: Case = {

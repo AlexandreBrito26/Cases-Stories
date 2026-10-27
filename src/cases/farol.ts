@@ -81,9 +81,9 @@ const CLUES: Clue[] = [
 
 const SC: Record<string, SceneData> = {
   tor: { n: 'Torre do farol', d: 'Cento e trinta e dois degraus, uma lâmpada parada e o vento batendo nas janelas. Joaquim foi achado na base da escada.', h: [['c1', 180, 90], ['c2', 240, 170]] },
-  cas: { n: 'Casa do faroleiro', d: 'Uma mesa de madeira, duas xícaras e o diário de bordo aberto sobre a estante.', h: [['c3', 110, 120], ['c4', 270, 140]] },
-  anc: { n: 'Ancoradouro', d: 'O píer balança com a maré. Um bote solto bate contra as estacas, e as caixas ainda estão na beira.', h: [['c5', 80, 150], ['c6', 250, 120]] },
-  dep: { n: 'Depósito', d: 'Caixas empilhadas, óleo nos barris e um rádio ligado sem ninguém por perto.', h: [['c7', 120, 110], ['c8', 270, 150]] },
+  cas: { n: 'Casa do faroleiro', d: 'Uma mesa de madeira, duas xícaras e o diário de bordo aberto sobre a estante.', h: [['c3', 122, 140], ['c4', 256, 140]] },
+  anc: { n: 'Ancoradouro', d: 'O píer balança com a maré. Um bote solto bate contra as estacas, e as caixas ainda estão na beira.', h: [['c5', 70, 172], ['c6', 250, 115]] },
+  dep: { n: 'Depósito', d: 'Caixas empilhadas, óleo nos barris e um rádio ligado sem ninguém por perto.', h: [['c7', 116, 100], ['c8', 318, 108]] },
 }
 
 export const farol: Case = {
