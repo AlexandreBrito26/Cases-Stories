@@ -1,13 +1,17 @@
-import { useEffect, useState, type Dispatch, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type Dispatch, type ReactNode } from 'react'
 import { BL, CASES } from './cases'
 import type { Case, Clue } from './types'
 import { MainMenu, type View } from './MainMenu'
 import { setLast } from './state'
 import { applySettings, loadSettings, saveSettings } from './settings'
-import { tick, unlock } from './audio'
+import { chime, tick, unlock } from './audio'
+import { ACHIEVEMENTS, bestScore, grantAch, saveScore, scoreOf } from './achievements'
+import { ARQUIVO } from './archive'
+import { playTrack, stopTrack } from './music'
 import { Scene, StaticScene } from './Scene'
+import { Portrait, moodOf } from './portraits'
 import { CUTS } from './svg'
-import { useGame, type Action, type GameState, type Tab } from './state'
+import { HINT_MAX, peek, useGame, type Action, type GameState, type LogEntry, type Tab } from './state'
 
 const clueOf = (cs: Case, id: string): Clue => cs.clues.find((c) => c.id === id)!
 
@@ -36,6 +40,9 @@ function Menu({ cs, s, d, onHome }: { cs: Case; s: GameState; d: D; onHome: () =
               Continuar · {s.clues.length}/{cs.clues.length} evidências
             </button>
           )}
+          <button className="btn ghost" disabled={s.clues.length > 0} onClick={() => d({ type: 'modo' })}>
+            Modo investigador · {s.investigador ? 'ligado' : 'desligado'}
+          </button>
           <button className={'btn' + (s.started ? ' ghost' : '')} onClick={() => d({ type: 'new' })}>
             Novo jogo
           </button>
@@ -100,23 +107,69 @@ function Cutscene({ cs, s, d }: { cs: Case; s: GameState; d: D }) {
 
 /* ---------- Abas ---------- */
 function ScenesTab({ cs, s, d }: { cs: Case; s: GameState; d: D }) {
-  const found = cs.scenes[s.scene].h.filter((h) => s.clues.includes(h[0])).length
+  const sc = cs.scenes[s.scene]
+  const found = sc.h.filter((h) => s.clues.includes(h[0])).length
+  const left = HINT_MAX - s.hints
+  const done = s.clues.length >= cs.clues.length
+  const arq = ARQUIVO[cs.id]?.[s.scene]
+  const aberto = sc.h.every((h) => s.clues.includes(h[0]))
   return (
     <div className="sec sc-tab">
       <div className="chips">
         {Object.keys(cs.scenes).map((k) => (
-          <button key={k} className="chip" aria-pressed={s.scene === k} onClick={() => d({ type: 'scene', id: k })}>
+          <button
+            key={k}
+            className={'chip' + (s.hint === k && !s.investigador ? ' hinted' : '')}
+            aria-pressed={s.scene === k}
+            onClick={() => d({ type: 'scene', id: k })}
+          >
             {cs.scenes[k].n}
           </button>
         ))}
       </div>
       <div className="scene">
-        <Scene id={s.scene} scenes={cs.scenes} found={s.clues} onClue={(id) => d({ type: 'clue', id })} />
-        <div className="caption">{cs.scenes[s.scene].d}</div>
+        <Scene
+          id={s.scene}
+          scenes={cs.scenes}
+          found={s.clues}
+          onClue={(id) => {
+            if (!s.clues.includes(id)) chime()
+            d({ type: 'clue', id })
+          }}
+        />
+        <div className="caption">{sc.d}</div>
       </div>
       <p className="label" style={{ marginTop: 12 }}>
-        {found} de 2 objetos examinados aqui · toque nos pontos dourados
+        {found} de {sc.h.length} objetos examinados aqui · toque nos pontos dourados
       </p>
+      {arq && (
+        <div className="arq">
+          {aberto ? (
+            <>
+              <b>Arquivo do cômodo</b>
+              <p>{arq}</p>
+            </>
+          ) : (
+            <p className="empty">Arquivo bloqueado: examine todos os objetos deste cômodo.</p>
+          )}
+        </div>
+      )}
+      <div className="hintbar">
+        {s.investigador ? (
+          <span className="hinttxt">Modo investigador: sem dicas. A pontuação vale o dobro.</span>
+        ) : (
+          <>
+            <button className="btn ghost" disabled={left <= 0 || done} onClick={() => d({ type: 'hint' })}>
+              Pedir dica · {left} restante{left === 1 ? '' : 's'}
+            </button>
+            {s.hint && !done && (
+              <span className="hinttxt">
+                Pista: ainda há algo em {cs.scenes[s.hint].n}. Dicas usadas tiram a conquista Olho treinado.
+              </span>
+            )}
+          </>
+        )}
+      </div>
     </div>
   )
 }
@@ -132,7 +185,7 @@ function SuspectsTab({ cs, s, d }: { cs: Case; s: GameState; d: D }) {
             ‹ Suspeitos
           </button>
           <div className="sus" style={{ marginTop: 12, borderColor: 'var(--brass)' }}>
-            <div className="avatar">{p.ini}</div>
+            <div className="avatar"><Portrait id={p.id} ini={p.ini} mood={moodOf(lg.map((l) => l.f))} /></div>
             <div>
               <b>{p.name}</b>
               <span>{p.role}</span>
@@ -174,7 +227,7 @@ function SuspectsTab({ cs, s, d }: { cs: Case; s: GameState; d: D }) {
           {lg.length > 0 && (
             <div className="log">
               {lg.map((l, i) => (
-                <div key={i}>
+                <div key={i} className={'entry' + (l.f === 'contra' ? ' contra' : '')}>
                   <div className="ask">{l.q}</div>
                   <p className="ans">{l.a}</p>
                   {l.f && <span className={'badge b-' + l.f}>{BL[l.f]}</span>}
@@ -192,14 +245,16 @@ function SuspectsTab({ cs, s, d }: { cs: Case; s: GameState; d: D }) {
       <div className="grid" style={{ marginTop: 10 }}>
         {cs.suspects.map((p) => {
           const n = (s.log[p.id] ?? []).length
+          const cc = (s.log[p.id] ?? []).filter((l) => l.f === 'contra').length
           return (
             <button key={p.id} className="sus" onClick={() => d({ type: 'sus', id: p.id })}>
-              <div className="avatar">{p.ini}</div>
+              <div className="avatar"><Portrait id={p.id} ini={p.ini} mood={moodOf((s.log[p.id] ?? []).map((l) => l.f))} /></div>
               <div>
                 <b>{p.name}</b>
                 <span>
                   {p.role}
                   {n ? ` · ${n} registro${n > 1 ? 's' : ''}` : ''}
+                  {cc ? ` · ⚠ ${cc} ${cc > 1 ? 'contradições' : 'contradição'}` : ''}
                 </span>
               </div>
             </button>
@@ -275,6 +330,37 @@ function BoardTab({ cs, s, d }: { cs: Case; s: GameState; d: D }) {
   )
 }
 
+function Summary({ cs, s }: { cs: Case; s: GameState }) {
+  const all: LogEntry[] = Object.values(s.log).flatMap((v) => v ?? [])
+  const count = (f: string) => all.filter((l) => l.f === f).length
+  const withContra = cs.suspects.filter((p) => (s.log[p.id] ?? []).some((l) => l.f === 'contra')).map((p) => p.name)
+  return (
+    <div className="card summary">
+      <div className="label">Resumo do caso</div>
+      <div className="sumgrid">
+        <div>
+          <b>
+            {s.clues.length}/{cs.clues.length}
+          </b>
+          evidências
+        </div>
+        <div>
+          <b>{count('contra')}</b>contradições
+        </div>
+        <div>
+          <b>{count('clear')}</b>álibis confirmados
+        </div>
+        <div>
+          <b>{count('adm') + count('crack')}</b>confissões ou pressões
+        </div>
+      </div>
+      <p className="empty">
+        {withContra.length ? `Contradições registradas com: ${withContra.join(', ')}.` : 'Nenhuma contradição registrada ainda.'}
+      </p>
+    </div>
+  )
+}
+
 function AccuseTab({ cs, s, d }: { cs: Case; s: GameState; d: D }) {
   const a = s.acc
   const ok = a.s !== null && a.m !== null && a.r !== null
@@ -299,6 +385,12 @@ function AccuseTab({ cs, s, d }: { cs: Case; s: GameState; d: D }) {
             {cs.win.text.map((p, i) => (
               <p key={i}>{p}</p>
             ))}
+            <p>
+              <b>Dicas usadas:</b> {s.hints} de {HINT_MAX}
+            </p>
+            <p>
+              <b>Pontuação:</b> {scoreOf(s)} · <b>Melhor:</b> {Math.max(bestScore(cs.id), scoreOf(s))}
+            </p>
             <p>
               <b>Classificação:</b> {cs.ranks.find(([min]) => q >= min)![1]}
             </p>
@@ -326,6 +418,7 @@ function AccuseTab({ cs, s, d }: { cs: Case; s: GameState; d: D }) {
   }
   return (
     <div className="sec">
+      <Summary cs={cs} s={s} />
       <div className="label">Acusação formal{s.tries ? ` · tentativa ${s.tries + 1}` : ''}</div>
       {s.clues.length < 5 && <p className="empty">Você tem {s.clues.length} evidências. Com menos de 5, é palpite.</p>}
       <div className="acc3">
@@ -393,16 +486,46 @@ function CaseGame({ cs, onHome, resume }: { cs: Case; onHome: () => void; resume
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const cutKey = s.cut ? s.cut.id + s.cut.i : ''
+  const [fx, setFx] = useState<{ k: number; label: string } | null>(null)
+  const prevScene = useRef(s.scene)
+  useEffect(() => {
+    if (prevScene.current === s.scene) return
+    prevScene.current = s.scene
+    if (document.documentElement.dataset.motion !== 'on') return
+    setFx({ k: Date.now(), label: cs.scenes[s.scene].n })
+    const t = setTimeout(() => setFx(null), 1500)
+    return () => clearTimeout(t)
+  }, [s.scene, cs])
 
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [s.tab, s.sel, s.menu, cutKey])
+
+  useEffect(() => {
+    playTrack(cs.theme, s.scene)
+    return stopTrack
+  }, [cs.theme, s.scene])
+
+  useEffect(() => {
+    if (s.res !== 'win') return
+    const ids = [cs.id]
+    if (s.hints === 0) ids.push('sem-dicas')
+    if (s.investigador) ids.push('investigador')
+    grantAch(ids)
+    saveScore(cs.id, scoreOf(s))
+    if (CASES.every((c) => c.id === cs.id || peek(c).solved)) grantAch(['todos'])
+  }, [s.res, cs.id, s.hints, s.investigador])
 
   if (s.cut) return <Cutscene cs={cs} s={s} d={d} />
   if (s.menu || !s.started) return <Menu cs={cs} s={s} d={d} onHome={onHome} />
 
   return (
     <>
+      {fx && (
+        <div key={fx.k} className="sfade" aria-hidden>
+          <span>{fx.label}</span>
+        </div>
+      )}
       <div className="top">
         <button className="mbtn" aria-label="Menu principal" onClick={() => d({ type: 'menu' })}>
           ☰
@@ -412,6 +535,7 @@ function CaseGame({ cs, onHome, resume }: { cs: Case; onHome: () => void; resume
           Evidências {s.clues.length}/{cs.clues.length}
         </div>
       </div>
+      {cs.tutorial?.[s.tab] && <p className="tut">{cs.tutorial[s.tab]}</p>}
       {s.tab === 'cenas' && <ScenesTab cs={cs} s={s} d={d} />}
       {s.tab === 'susp' && <SuspectsTab cs={cs} s={s} d={d} />}
       {s.tab === 'quadro' && <BoardTab cs={cs} s={s} d={d} />}

@@ -35,6 +35,7 @@ npm run preview  # testa o build
 - `src/cases/`: um arquivo por caso (`valverde.ts`, `imperial.ts`, `aurora.ts`) e `index.ts` com a lista `CASES`
 - `src/MainMenu.tsx`: menu principal (Continuar, Casos, Opções) e o fundo de espelho quebrado
 - `src/settings.ts` e `src/audio.ts`: opções de som e gráficos (chuva ambiente e efeitos gerados por WebAudio, sem arquivos)
+- `src/music.ts`: trilha de cada caso (andamento, harmonia e timbre próprios por tema, também gerados por WebAudio); a opção de ambiente liga e desliga a trilha junto com a chuva
 - `src/state.ts`: estado do jogo (`useReducer`) e persistência em `localStorage` (uma chave por caso; o Valverde mantém `caso-valverde-v1`, então saves antigos continuam valendo)
 - `src/svg.ts`: desenho das cenas, personagens e cutscenes de todos os casos (strings SVG)
 - `src/Scene.tsx`: componentes de cena (com pontos de investigação)

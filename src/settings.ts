@@ -4,12 +4,23 @@ export interface Settings {
   vol: number
   ambient: boolean
   sfx: boolean
+  music: boolean
+  musicVol: number
   quality: 'high' | 'low'
   grain: boolean
   motion: boolean
 }
 
-export const DEFAULTS: Settings = { vol: 70, ambient: true, sfx: true, quality: 'high', grain: true, motion: true }
+export const DEFAULTS: Settings = {
+  vol: 70,
+  ambient: true,
+  sfx: true,
+  music: true,
+  musicVol: 60,
+  quality: 'high',
+  grain: true,
+  motion: true,
+}
 const KEY = 'cases-stories-settings-v1'
 
 export function loadSettings(): Settings {
@@ -36,5 +47,5 @@ export function applySettings(s: Settings) {
   r.dataset.fx = s.quality
   r.dataset.grain = s.grain ? 'on' : 'off'
   r.dataset.motion = s.motion ? 'on' : 'off'
-  setAudio(s.vol, s.ambient, s.sfx)
+  setAudio(s.vol, s.ambient, s.sfx, s.music, s.musicVol)
 }

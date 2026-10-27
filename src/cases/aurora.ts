@@ -28,7 +28,7 @@ const SUS: Suspect[] = [
     role: 'Irmã de Ângelo, enoturismo, 61 anos',
     ini: 'I',
     qs: [
-      ['Onde a senhora estava às 21h?', 'Na degustação com a Bianca. Servi vinho para trinta pessoas.'],
+      ['Onde você estava às 21h?', 'Na degustação com a Bianca. Servi vinho para trinta pessoas.'],
       ['Como era a relação com seu irmão?', 'Dividimos esta terra por quarenta anos. Discutíamos por tudo, mas a gente se amava.'],
       ['A vinícola tinha problemas?', 'Todo ano tem. Mas a safra deste ano estava linda.'],
     ],
@@ -70,7 +70,7 @@ const SUS: Suspect[] = [
     role: 'Enólogo, 52 anos',
     ini: 'D',
     qs: [
-      ['Onde o senhor estava às 21h?', 'Na sala de degustação, apresentando os rótulos aos convidados. Só saí de lá depois das 21h15.'],
+      ['Onde você estava às 21h?', 'Na sala de degustação, apresentando os rótulos aos convidados. Só saí de lá depois das 21h15.'],
       ['Qual era sua relação com Ângelo?', 'Vinte e dois anos de casa. Mais que patrão, quase um irmão.'],
       ['Como está o Reserva 2019?', 'O melhor vinho que já fizemos. Vendeu tudo.'],
     ],

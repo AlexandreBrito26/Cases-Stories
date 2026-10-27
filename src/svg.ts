@@ -1,4 +1,5 @@
 import { sceneName } from './cases'
+import { ROOM_DRAW, ROOM_LT } from './rooms'
 
 type SceneId = string
 
@@ -11,7 +12,7 @@ function FX(id: SceneId): string {
  '<radialGradient id="vg" cx=".5" cy=".5" r=".75"><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".85"/></radialGradient>'+
  '<linearGradient id="fg" x1="0" y1="0" x2="0" y2="1"><stop offset=".5" stop-color="#8fb0b8" stop-opacity="0"/><stop offset="1" stop-color="#8fb0b8" stop-opacity=".22"/></linearGradient>'+
  '<pattern id="rn" width="12" height="28" patternUnits="userSpaceOnUse" patternTransform="rotate(14)"><path d="M3 2v12M9 14v10" stroke="#b5d3df" stroke-width="1" opacity=".55"/></pattern><clipPath id="wc"><rect x="28" y="22" width="92" height="82"/></clipPath>';
- var L=LT[id];
+ var L=LT[id]||ROOM_LT[id]||[];
  L.forEach(function(l,i){o+='<radialGradient id="l'+i+'"><stop offset="0" stop-color="'+l[3]+'" stop-opacity="'+l[4]+'"/><stop offset=".5" stop-color="'+l[3]+'" stop-opacity="'+(l[4]*.3)+'"/><stop offset="1" stop-color="'+l[3]+'" stop-opacity="0"/></radialGradient>'});
  o+='</defs><rect width="360" height="220" fill="#02080b" opacity=".5"/>';
  L.forEach(function(l,i){o+='<circle cx="'+l[0]+'" cy="'+l[1]+'" r="'+l[2]+'" fill="url(#l'+i+')" style="mix-blend-mode:screen" class="'+(i?'':'flick')+'"/>'});
@@ -82,6 +83,7 @@ var CUTS_RAW:Record<string,CutFrame[]>={intro:[{t:'Mansão Valverde. 22h40.',d:3
 export interface Person { k: string; x: number; y: number; s?: number; f?: number; e?: number; r?: number; b?: string; a?: string; h?: string }
 export interface CutFrame { t: string; d?: number; sc?: SceneId; z?: string; p?: Person[] }
 function scenery(id: SceneId, ps?: Person[]): string {
+ if(ROOM_DRAW[id]) return ROOM_DRAW[id]()+FX(id);
  var w='<rect width="360" height="220" class="f1"/>',b='';
  if(id==='esc'){
   b=w+'<rect x="28" y="22" width="92" height="82" class="f2"/><rect x="28" y="22" width="92" height="82" class="st"/><path d="M74 22v82M28 63h92" class="st"/>'+
@@ -250,6 +252,43 @@ export const CUTS: Record<string, Record<'intro' | 'end', CutFrame[]>> = {
   valverde: CUTS_RAW as Record<'intro' | 'end', CutFrame[]>,
   imperial: CUTS_IMP as Record<'intro' | 'end', CutFrame[]>,
   aurora: CUTS_AUR as Record<'intro' | 'end', CutFrame[]>,
+  galeria: {
+    intro: [
+      { t: 'Galeria Serra. Uma tela rara foi atestada na véspera.', d: 4000 },
+      { t: 'Na manhã seguinte, Eduardo Serra foi achado morto no ateliê de restauro.', d: 4500 },
+      { t: 'Quatro pessoas tinham acesso àquele andar. Uma delas trocou a verdade por uma cópia.', d: 4500 },
+      { t: 'Caso 004 · O Caso Ateliê', d: 3000 },
+    ],
+    end: [
+      { t: 'A tela original estava dentro da mala. A cópia tinha a assinatura de quem a pintou.', d: 4500 },
+      { t: 'Caso encerrado', d: 3000 },
+    ],
+  },
+  farol: {
+    intro: [
+      { t: 'Ponta do Farol. Uma tempestade derrubou a energia da costa.', d: 4000 },
+      { t: 'Na base da torre, o faroleiro Joaquim Mota foi encontrado morto.', d: 4000 },
+      { t: 'Naquela noite, a luz se apagou, e um navio quase bateu nas pedras.', d: 4500 },
+      { t: 'Caso 005 · O Caso Farol', d: 3000 },
+    ],
+    end: [
+      { t: 'A chave da lâmpada estava na caixa de ferro, e só dois homens sabiam onde ela ficava.', d: 4500 },
+      { t: 'Caso encerrado', d: 3000 },
+    ],
+  },
+  origem: {
+    intro: [
+      { t: 'Seu primeiro caso. Uma joia de família sumiu da mansão Lima.', d: 4000 },
+      { t: 'Três pessoas estavam em casa naquela noite. Só uma delas mentiu.', d: 4000 },
+      { t: 'Comece pelas cenas. Toque nos pontos dourados.', d: 4000 },
+      { t: 'Caso 000 · Onde Tudo Começou', d: 3000 },
+    ],
+    end: [
+      { t: 'A joia foi encontrada onde ninguém tinha procurado.', d: 4000 },
+      { t: 'Você resolveu seu primeiro caso. Foi aqui que tudo começou.', d: 4500 },
+      { t: 'Caso encerrado', d: 3000 },
+    ],
+  },
 }
 
 /** Isola os ids do SVG (gradientes, filtros) para vários SVGs coexistirem na mesma página. */

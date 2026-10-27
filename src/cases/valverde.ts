@@ -61,7 +61,7 @@ const SUS: Suspect[] = [
     role: 'Médico da família, 58 anos',
     ini: 'H',
     qs: [
-      ['Onde o senhor estava às 22h?', 'No salão, com os demais. Vi Augusto pela última vez no fim do jantar, por volta das 21h30.'],
+      ['Onde você estava às 22h?', 'No salão, com os demais. Vi Augusto pela última vez no fim do jantar, por volta das 21h30.'],
       ['Qual era sua relação com Augusto?', 'Médico e amigo há 25 anos. Cuidava do coração dele.'],
       ['Do que ele morreu, doutor?', 'Parada cardíaca, imagino. Era previsível na idade dele.'],
     ],

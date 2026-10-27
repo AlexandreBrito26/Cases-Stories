@@ -2,7 +2,8 @@
 let ctx: AudioContext | null = null
 let master: GainNode
 let rain: GainNode
-let cur = { vol: 70, ambient: true, sfx: true }
+let music: GainNode
+let cur = { vol: 70, ambient: true, sfx: true, music: true, musicVol: 60 }
 
 function init() {
   if (ctx) return
@@ -11,6 +12,9 @@ function init() {
   ctx = new AC()
   master = ctx.createGain()
   master.connect(ctx.destination)
+  music = ctx.createGain()
+  music.gain.value = 0
+  music.connect(master)
   const buf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate)
   const d = buf.getChannelData(0)
   for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1
@@ -36,10 +40,11 @@ function apply() {
   if (!ctx) return
   master.gain.setTargetAtTime(cur.vol / 100, ctx.currentTime, 0.05)
   rain.gain.setTargetAtTime(cur.ambient ? 0.1 : 0, ctx.currentTime, 0.4)
+  music.gain.setTargetAtTime(cur.music ? (cur.musicVol / 100) * 0.8 : 0, ctx.currentTime, 0.4)
 }
 
-export function setAudio(vol: number, ambient: boolean, sfx: boolean) {
-  cur = { vol, ambient, sfx }
+export function setAudio(vol: number, ambient: boolean, sfx: boolean, music: boolean, musicVol: number) {
+  cur = { vol, ambient, sfx, music, musicVol }
   apply()
 }
 
@@ -63,4 +68,30 @@ export function tick() {
   g.connect(master)
   o.start()
   o.stop(ctx.currentTime + 0.1)
+}
+
+/** Saída da trilha musical (null até o primeiro gesto do usuário). */
+export function musicOut(): { ctx: AudioContext; out: GainNode } | null {
+  return ctx && music ? { ctx, out: music } : null
+}
+
+/** Som curto ao encontrar uma evidência nova. */
+export function chime() {
+  if (!ctx || !cur.sfx || cur.vol === 0) return
+  const c = ctx
+  const t = c.currentTime
+  ;[784, 1046.5].forEach((f, i) => {
+    const o = c.createOscillator()
+    const g = c.createGain()
+    const at = t + i * 0.12
+    o.type = 'sine'
+    o.frequency.value = f
+    g.gain.setValueAtTime(0.0001, at)
+    g.gain.exponentialRampToValueAtTime(0.09, at + 0.02)
+    g.gain.exponentialRampToValueAtTime(0.0001, at + 0.5)
+    o.connect(g)
+    g.connect(master)
+    o.start(at)
+    o.stop(at + 0.55)
+  })
 }

@@ -34,7 +34,12 @@ export interface GameState {
   menu: boolean
   how: boolean
   cut: { id: CutId; i: number } | null
+  hints: number
+  hint: string | null
+  investigador: boolean
 }
+
+export const HINT_MAX = 3
 
 export type Action =
   | { type: 'start' }
@@ -59,6 +64,8 @@ export type Action =
   | { type: 'cskip' }
   | { type: 'retry' }
   | { type: 'reset' }
+  | { type: 'hint' }
+  | { type: 'modo' }
 
 const fresh = (cs: Case): GameState => ({
   started: false,
@@ -76,6 +83,9 @@ const fresh = (cs: Case): GameState => ({
   menu: true,
   how: false,
   cut: null,
+  hints: 0,
+  hint: null,
+  investigador: false,
 })
 
 function init(cs: Case): GameState {
@@ -149,7 +159,7 @@ export const makeReducer = (cs: Case) => (s: GameState, a: Action): GameState =>
     case 'replay':
       return { ...s, started: true, menu: false, cut: { id: 'intro', i: 0 } }
     case 'new':
-      return newGame(cs, { cut: { id: 'intro', i: 0 } })
+      return newGame(cs, { cut: { id: 'intro', i: 0 }, investigador: s.investigador })
     case 'cnext': {
       if (!s.cut) return s
       const i = s.cut.i + 1
@@ -160,7 +170,15 @@ export const makeReducer = (cs: Case) => (s: GameState, a: Action): GameState =>
     case 'retry':
       return { ...s, res: null }
     case 'reset':
-      return newGame(cs, {})
+      return newGame(cs, { investigador: s.investigador })
+    case 'modo':
+      return s.clues.length ? s : { ...s, investigador: !s.investigador }
+    case 'hint': {
+      if (s.investigador || s.hints >= HINT_MAX) return s
+      const next = cs.clues.find((c) => !s.clues.includes(c.id))
+      if (!next) return s
+      return { ...s, hints: s.hints + 1, hint: next.sc }
+    }
   }
 }
 

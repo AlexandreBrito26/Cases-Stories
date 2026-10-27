@@ -4,9 +4,12 @@ import { Emblem } from './Logo'
 import { StaticScene } from './Scene'
 import { getLast, peek, resetAll } from './state'
 import { DEFAULTS, type Settings } from './settings'
+import { ACHIEVEMENTS, getAch } from './achievements'
+import { textoLore } from './lore'
+import { getNome, setNome } from './nome'
 import type { Case } from './types'
 
-export type View = 'main' | 'cases' | 'options'
+export type View = 'main' | 'cases' | 'options' | 'lore' | 'conquistas'
 
 /** Espelho quebrado: estilhaços irradiando de um ponto de impacto, cada um com seu brilho. */
 function Shards() {
@@ -141,6 +144,8 @@ interface Props {
 
 export function MainMenu({ view, setView, onOpen, settings, setSettings }: Props) {
   const [confirm, setConfirm] = useState(false)
+  const [nome, setNomeAtual] = useState(getNome)
+  const [rascunho, setRascunho] = useState(nome)
   const set = (patch: Partial<Settings>) => setSettings({ ...settings, ...patch })
   const last = CASES.find((c) => c.id === getLast())
   const lp = last ? peek(last) : null
@@ -176,11 +181,96 @@ export function MainMenu({ view, setView, onOpen, settings, setSettings }: Props
                 <span className="nl">Casos</span>
                 <span className="ns">{CASES.length} dossiês no arquivo</span>
               </button>
+              <button className="nbtn" onClick={() => setView('lore')}>
+                <span className="nl">Quem é você</span>
+                <span className="ns">{getAch().includes('origem') ? nome : 'História fechada'}</span>
+              </button>
+              <button className="nbtn" onClick={() => setView('conquistas')}>
+                <span className="nl">Conquistas</span>
+                <span className="ns">
+                  {getAch().length} de {ACHIEVEMENTS.length}
+                </span>
+              </button>
               <button className="nbtn" onClick={() => setView('options')}>
                 <span className="nl">Opções</span>
                 <span className="ns">Som · Gráficos · Jogo</span>
               </button>
             </nav>
+          </>
+        )}
+
+        {view === 'lore' && (
+          <>
+            <Back onClick={() => setView('main')} title="Quem é você" />
+            <section className="lore">
+              {getAch().includes('origem') ? (
+                <>
+                  <h3>{nome}</h3>
+                  <div className="nomeform">
+                    <label className="label" htmlFor="nome-input">
+                      Nome do detetive
+                    </label>
+                    <div className="nomerow">
+                      <input
+                        id="nome-input"
+                        className="nomein"
+                        value={rascunho}
+                        maxLength={30}
+                        onChange={(e) => setRascunho(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') setNomeAtual(setNome(rascunho))
+                        }}
+                      />
+                      <button
+                        className="nsmall"
+                        onClick={() => {
+                          const salvo = setNome(rascunho)
+                          setNomeAtual(salvo)
+                          setRascunho(salvo)
+                        }}
+                      >
+                        Salvar
+                      </button>
+                      <button
+                        className="nsmall"
+                        onClick={() => {
+                          const salvo = setNome('')
+                          setNomeAtual(salvo)
+                          setRascunho(salvo)
+                        }}
+                      >
+                        Original
+                      </button>
+                    </div>
+                  </div>
+                  {textoLore(nome).map((t, i) => (
+                    <p key={i}>{t}</p>
+                  ))}
+                </>
+              ) : (
+                <p className="empty">Esta história ainda está fechada. Resolva o Caso 000 para abri-la.</p>
+              )}
+            </section>
+          </>
+        )}
+
+        {view === 'conquistas' && (
+          <>
+            <Back onClick={() => setView('main')} title="Conquistas" />
+            <section className="nlist" aria-label="Conquistas">
+              {ACHIEVEMENTS.map((a) => {
+                const ok = getAch().includes(a.id)
+                return (
+                  <div key={a.id} className={'ach' + (ok ? ' on' : '')}>
+                    <span className="nno">{ok ? '✓' : '•'}</span>
+                    <div>
+                      <b>{a.title}</b>
+                      <span>{a.desc}</span>
+                    </div>
+                  </div>
+                )
+              })}
+            </section>
           </>
         )}
 
@@ -192,7 +282,7 @@ export function MainMenu({ view, setView, onOpen, settings, setSettings }: Props
                 <CaseCard key={c.id} cs={c} onOpen={(id) => onOpen(id, false)} />
               ))}
               <div className="ncase lock" aria-disabled="true">
-                <span className="nno">Caso nº {String(CASES.length + 1).padStart(3, '0')}</span>
+                <span className="nno">Caso nº {String(CASES.length).padStart(3, '0')}</span>
                 <span className="ntitle">Futuros casos</span>
                 <span className="redact" style={{ width: '90%' }} />
                 <span className="redact" style={{ width: '64%' }} />
@@ -223,6 +313,21 @@ export function MainMenu({ view, setView, onOpen, settings, setSettings }: Props
               </Row>
               <Row title="Efeitos de interface" hint="Tique ao tocar nos botões">
                 <Switch on={settings.sfx} onChange={(v) => set({ sfx: v })} label="Efeitos de interface" />
+              </Row>
+              <Row title="Trilha musical" hint="Música de cada caso e cômodo">
+                <Switch on={settings.music} onChange={(v) => set({ music: v })} label="Trilha musical" />
+              </Row>
+              <Row title="Volume da trilha" hint={settings.musicVol + '%'}>
+                <input
+                  className="rng"
+                  type="range"
+                  min={0}
+                  max={100}
+                  value={settings.musicVol}
+                  aria-label="Volume da trilha"
+                  disabled={!settings.music}
+                  onChange={(e) => set({ musicVol: Number(e.target.value) })}
+                />
               </Row>
             </section>
             <section className="osec">

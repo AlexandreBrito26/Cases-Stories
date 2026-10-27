@@ -43,4 +43,5 @@ export interface Case {
   mot: string[]
   win: { s: string; m: number; r: number; text: string[] }
   ranks: [number, string][]
+  tutorial?: Partial<Record<'cenas' | 'susp' | 'quadro' | 'acusar', string>>
 }

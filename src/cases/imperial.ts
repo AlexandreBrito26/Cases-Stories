@@ -28,7 +28,7 @@ const SUS: Suspect[] = [
     role: 'Produtor e sócio, 55 anos',
     ini: 'O',
     qs: [
-      ['Onde o senhor estava às 22h40?', 'No foyer, recebendo convidados no bar. Fiquei lá a noite toda.'],
+      ['Onde você estava às 22h40?', 'No foyer, recebendo convidados no bar. Fiquei lá a noite toda.'],
       ['Qual era sua relação com Sérgio?', 'Sócio e amigo de trinta anos. Brigávamos por tudo, como todo casal de teatro.'],
       ['Como estão as finanças do teatro?', 'Teatro nunca é negócio fácil, mas estamos bem. A estreia foi um sucesso de bilheteria.'],
     ],
