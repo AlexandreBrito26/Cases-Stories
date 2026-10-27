@@ -383,3 +383,17 @@ html[data-motion="on"] .sheet{animation:rise .35s ease both}
 @keyframes sname{0%,25%{opacity:0}40%,65%{opacity:1}100%{opacity:0}}
 .arq{margin-top:14px;padding:12px 14px;border:1px solid var(--brass);background:#0005}
 .arq p{margin:6px 0 0;line-height:1.55}
+
+/* Fase B */
+.hot.marked .dot{filter:drop-shadow(0 0 5px #d8b56a)}
+.hot.marked .halo{opacity:.9}
+.ev{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #ffffff18}
+.ev span:nth-child(2){flex:1;font-size:14px}
+.ev span:first-child{font-family:var(--display);color:var(--brass);min-width:48px}
+.hist p{margin:4px 0;font-size:14px}
+.humor{font-size:14px;opacity:.85;margin:8px 0}
+.lockq{font-size:12px;opacity:.7;margin:2px 0 0}
+.hot.hidden .halo{opacity:0}
+.hot.hidden .dot{opacity:.18}
+.lock-desafio{opacity:.6}
+.capitulo{margin:14px 0 6px;font-family:var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--brass);font-size:13px}

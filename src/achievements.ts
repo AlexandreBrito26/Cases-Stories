@@ -1,4 +1,6 @@
 /* Conquistas salvas em localStorage (fora dos saves de cada caso). */
+import { TENTATIVAS_LIVRES } from './state'
+
 export const ACHIEVEMENTS: { id: string; title: string; desc: string }[] = [
   { id: 'origem', title: 'Onde tudo começou', desc: 'Resolva o Caso 000.' },
   { id: 'valverde', title: 'Mansão Valverde', desc: 'Resolva o Caso Valverde.' },
@@ -8,6 +10,8 @@ export const ACHIEVEMENTS: { id: string; title: string; desc: string }[] = [
   { id: 'galeria', title: 'Quadro falso', desc: 'Resolva o Caso 004.' },
   { id: 'investigador', title: 'Sem rede de apoio', desc: 'Resolva um caso no modo investigador.' },
   { id: 'farol', title: 'Luz na costa', desc: 'Resolva o Caso 005.' },
+  { id: 'trem', title: 'Último vagão', desc: 'Resolva o Caso 006.' },
+  { id: 'silencio', title: 'Ouvido absoluto', desc: 'Resolva o Caso 007, o desafio.' },
   { id: 'todos', title: 'Arquivo completo', desc: 'Resolva todos os casos do arquivo.' },
 ]
 
@@ -32,9 +36,10 @@ export function grantAch(ids: string[]) {
   }
 }
 
-/** Pontuação: começa em 1000, perde por acusação errada e por dica; modo investigador dobra. */
+/** Pontuação: começa em 1000. Até 10 erros são livres; depois cada erro tira 50. Cada dica tira 75. Modo investigador dobra. */
 export function scoreOf(s: { tries: number; hints: number; investigador: boolean }): number {
-  return Math.max(0, 1000 - 120 * s.tries - 150 * s.hints) * (s.investigador ? 2 : 1)
+  const erros = Math.max(0, s.tries - TENTATIVAS_LIVRES)
+  return Math.max(0, 1000 - 50 * erros - 75 * s.hints) * (s.investigador ? 2 : 1)
 }
 
 const SKEY = 'cases-stories-scores-v1'

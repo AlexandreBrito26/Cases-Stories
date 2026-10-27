@@ -5,8 +5,11 @@ import { aurora } from './aurora'
 import { origem } from './origem'
 import { galeria } from './galeria'
 import { farol } from './farol'
+import { enrich } from '../extras'
+import { trem } from './trem'
+import { silencio } from './silencio'
 
-export const CASES: Case[] = [origem, valverde, imperial, aurora, galeria, farol]
+export const CASES: Case[] = [origem, valverde, imperial, aurora, galeria, farol, trem, silencio].map(enrich)
 
 export const BL: Record<Flag, string> = {
   contra: 'Contradição',

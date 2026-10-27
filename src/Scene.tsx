@@ -3,7 +3,7 @@ import type { SceneData } from './types'
 import { sceneInner, sceneSvgScoped, type Person } from './svg'
 
 /** Cena interativa com os pontos dourados de investigação. */
-export function Scene({ id, scenes, found, onClue }: { id: string; scenes: Record<string, SceneData>; found: string[]; onClue: (c: string) => void }) {
+export function Scene({ id, scenes, found, onClue, hidden = false }: { id: string; scenes: Record<string, SceneData>; found: string[]; onClue: (c: string) => void; hidden?: boolean }) {
   return (
     <svg viewBox="0 0 360 220" role="img" aria-label={'Cena: ' + scenes[id].n}>
       <g dangerouslySetInnerHTML={{ __html: sceneInner(id) }} />
@@ -12,7 +12,7 @@ export function Scene({ id, scenes, found, onClue }: { id: string; scenes: Recor
         return (
           <g
             key={cid}
-            className={'hot' + (done ? ' done' : '')}
+            className={'hot' + (done ? ' done' : '') + (hidden && !done ? ' hidden' : '')}
             tabIndex={0}
             role="button"
             aria-label={'Examinar objeto' + (done ? ' (já examinado)' : '')}

@@ -117,7 +117,6 @@ export const aurora: Case = {
   synopsis:
     'Noite de colheita na Vinícola Aurora. O patriarca é achado morto no lagar, sem um arranhão. Parecia descuido, até alguém conferir os rótulos.',
   place: 'Vinícola Aurora',
-  difficulty: 2,
   bg: 'aad',
   suspectsLabel: 'Quatro pessoas conheciam o lagar',
   suspects: SUS,

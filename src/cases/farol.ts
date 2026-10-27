@@ -98,7 +98,6 @@ export const farol: Case = {
   synopsis:
     'Na Ponta do Farol, o faroleiro Joaquim Mota é achado morto na base da torre. Na mesma noite, a lâmpada se apagou e um navio quase naufragou na costa.',
   place: 'Farol da Ponta',
-  difficulty: 2,
   bg: 'tor',
   suspectsLabel: 'Quatro pessoas estavam na ponta na noite da tempestade',
   suspects: SUS,

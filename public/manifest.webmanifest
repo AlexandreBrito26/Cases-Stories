@@ -1,0 +1,16 @@
+{
+  "name": "Cases Stories",
+  "short_name": "Cases",
+  "description": "Jogo de investigação: cada caso é um dossiê.",
+  "lang": "pt-BR",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0e1312",
+  "theme_color": "#0e1312",
+  "icons": [
+    { "src": "/logo-emblem-1024.png", "sizes": "1024x1024", "type": "image/png", "purpose": "any" },
+    { "src": "/logo-emblem-1024.png", "sizes": "1024x1024", "type": "image/png", "purpose": "maskable" }
+  ]
+}

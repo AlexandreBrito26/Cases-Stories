@@ -41,7 +41,16 @@ const LOOKS: Record<string, Look> = {
   ro: { skin: '#dcaa88', hair: '#5a3a28', style: 'coque', shirt: '#4a5a6a', bg: '#1f2a36', acc: 'colar' },
   ti: { skin: '#c98f66', hair: '#1a1410', style: 'curto', shirt: '#2f4a5a', bg: '#1a2a34', beard: true },
   ar: { skin: '#b07a55', hair: '#d6d2cc', style: 'careca', shirt: '#4a4236', bg: '#2a2620', glasses: true, acc: 'gravata' },
-  ce: { skin: '#f0cdb0', hair: '#2a1f1a', style: 'longo', shirt: '#1f3340', bg: '#17242e', acc: 'brinco' },
+  ce: { skin: '#f0cdb0', hair: '#2a1f1a', style: 'longo', shirt: '#1f3340', bg: '#17242e', acc: 'brinco' },  // Caso 006 · Trem Noturno
+  sa: { skin: '#e9c0a0', hair: '#3a2418', style: 'coque', shirt: '#2a3a4a', bg: '#1f2a36', glasses: true },
+  mi: { skin: '#a77550', hair: '#2a2420', style: 'curto', shirt: '#1d2b3a', bg: '#1a2430', beard: true, acc: 'gravata' },
+  eva: { skin: '#f4d6bf', hair: '#e0c97a', style: 'longo', shirt: '#4a2a40', bg: '#2a1e28', acc: 'brinco' },
+  gu: { skin: '#e1b48f', hair: '#8c8c8c', style: 'curto', shirt: '#2a2a2a', bg: '#202020', glasses: true, acc: 'gravata' },
+  // Caso 007 · Silêncio
+  ol: { skin: '#f0d0b5', hair: '#1f1a18', style: 'longo', shirt: '#3a2a3a', bg: '#241c26', acc: 'brinco' },
+  ca: { skin: '#cf9e7a', hair: '#2a2a2a', style: 'curto', shirt: '#2f3f4f', bg: '#1d2836', beard: true },
+  be: { skin: '#9a6a48', hair: '#e8e0d4', style: 'coque', shirt: '#5a4a2a', bg: '#2e2818', glasses: true, acc: 'colar' },
+  hu: { skin: '#d8ad88', hair: '#4a3a2a', style: 'curto', shirt: '#3a3a3a', bg: '#222222', beard: true },
 }
 
 const fallback: Look = { skin: '#e0b08c', hair: '#3a3a3a', style: 'curto', shirt: '#3a3a3a', bg: '#262626' }

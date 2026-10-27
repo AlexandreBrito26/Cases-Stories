@@ -120,7 +120,6 @@ export const valverde: Case = {
   synopsis:
     'Uma mansão isolada pela tempestade. O patriarca da família é encontrado na poltrona do escritório, sereno demais. Só quatro pessoas estavam na casa.',
   place: 'Mansão Valverde',
-  difficulty: 2,
   bg: 'esc',
   suspectsLabel: 'Quatro pessoas estavam na casa',
   suspects: SUS,

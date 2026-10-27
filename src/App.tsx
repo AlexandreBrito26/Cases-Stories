@@ -7,13 +7,22 @@ import { applySettings, loadSettings, saveSettings } from './settings'
 import { chime, tick, unlock } from './audio'
 import { ACHIEVEMENTS, bestScore, grantAch, saveScore, scoreOf } from './achievements'
 import { ARQUIVO } from './archive'
+import { registrarVitoria } from './stats'
 import { playTrack, stopTrack } from './music'
 import { Scene, StaticScene } from './Scene'
-import { Portrait, moodOf } from './portraits'
+import { Portrait, moodOf, type Mood } from './portraits'
 import { CUTS } from './svg'
 import { HINT_MAX, peek, useGame, type Action, type GameState, type LogEntry, type Tab } from './state'
 
 const clueOf = (cs: Case, id: string): Clue => cs.clues.find((c) => c.id === id)!
+
+/** B3: humor do suspeito pelo interrogatório. Três ou mais perguntas sem álibi deixam nervoso. */
+const humorOf = (lg: LogEntry[]): Mood => {
+  const f = lg.map((l) => l.f)
+  if (lg.length >= 3 && !f.some(Boolean)) return 'nervoso'
+  return moodOf(f)
+}
+const HUMOR: Record<Mood, string> = { serio: 'sereno', nervoso: 'inquieto', sorrindo: 'aliviado' }
 
 type D = Dispatch<Action>
 
@@ -132,6 +141,7 @@ function ScenesTab({ cs, s, d }: { cs: Case; s: GameState; d: D }) {
           id={s.scene}
           scenes={cs.scenes}
           found={s.clues}
+          hidden={!!cs.desafio}
           onClue={(id) => {
             if (!s.clues.includes(id)) chime()
             d({ type: 'clue', id })
@@ -185,24 +195,31 @@ function SuspectsTab({ cs, s, d }: { cs: Case; s: GameState; d: D }) {
             ‹ Suspeitos
           </button>
           <div className="sus" style={{ marginTop: 12, borderColor: 'var(--brass)' }}>
-            <div className="avatar"><Portrait id={p.id} ini={p.ini} mood={moodOf(lg.map((l) => l.f))} /></div>
+            <div className="avatar"><Portrait id={p.id} ini={p.ini} mood={humorOf(lg)} /></div>
             <div>
               <b>{p.name}</b>
               <span>{p.role}</span>
             </div>
           </div>
+          <p className="humor">Parece {HUMOR[humorOf(lg)]}.</p>
           <div className="card">
             <div className="label">Perguntar</div>
-            {p.qs.map((q, i) => (
-              <button
-                key={i}
-                className="q"
-                disabled={lg.some((l) => l.k === 'q' + i)}
-                onClick={() => d({ type: 'ask', i })}
-              >
-                {q[0]}
-              </button>
-            ))}
+            {p.qs.map((q, i) => {
+              const bloqueada = !!q[2] && !s.clues.includes(q[2])
+              return (
+                <div key={i}>
+                  <button
+                    className="q"
+                    disabled={bloqueada || lg.some((l) => l.k === 'q' + i)}
+                    onClick={() => d({ type: 'ask', i })}
+                  >
+                    {bloqueada ? '🔒 ' : ''}
+                    {q[0]}
+                  </button>
+                  {bloqueada && <p className="lockq">Libera ao apresentar a evidência certa.</p>}
+                </div>
+              )
+            })}
           </div>
           <div className="card">
             <div className="label">Apresentar evidência</div>
@@ -248,7 +265,7 @@ function SuspectsTab({ cs, s, d }: { cs: Case; s: GameState; d: D }) {
           const cc = (s.log[p.id] ?? []).filter((l) => l.f === 'contra').length
           return (
             <button key={p.id} className="sus" onClick={() => d({ type: 'sus', id: p.id })}>
-              <div className="avatar"><Portrait id={p.id} ini={p.ini} mood={moodOf((s.log[p.id] ?? []).map((l) => l.f))} /></div>
+              <div className="avatar"><Portrait id={p.id} ini={p.ini} mood={humorOf(s.log[p.id] ?? [])} /></div>
               <div>
                 <b>{p.name}</b>
                 <span>
@@ -377,6 +394,7 @@ function AccuseTab({ cs, s, d }: { cs: Case; s: GameState; d: D }) {
     if (a.s !== cs.win.s) w.push('o culpado')
     if (a.m !== cs.win.m) w.push('o método')
     if (a.r !== cs.win.r) w.push('o motivo')
+    if (cs.linha && s.ordem.join() !== cs.linha.map((x) => x.id).join()) w.push('a ordem da noite')
     result = (
       <div className="result">
         <div className={'stamp' + (win ? '' : ' bad')}>{win ? 'CASO RESOLVIDO' : 'ACUSAÇÃO FALHA'}</div>
@@ -420,6 +438,7 @@ function AccuseTab({ cs, s, d }: { cs: Case; s: GameState; d: D }) {
     <div className="sec">
       <Summary cs={cs} s={s} />
       <div className="label">Acusação formal{s.tries ? ` · tentativa ${s.tries + 1}` : ''}</div>
+      <p className="empty">Erros são livres até 10 tentativas. Depois, cada erro custa pontos.</p>
       {s.clues.length < 5 && <p className="empty">Você tem {s.clues.length} evidências. Com menos de 5, é palpite.</p>}
       <div className="acc3">
         <div className="card">
@@ -435,12 +454,45 @@ function AccuseTab({ cs, s, d }: { cs: Case; s: GameState; d: D }) {
           {cs.mot.map((t, i) => opt(t, a.r === i, () => d({ type: 'acc', k: 'r', v: i }), i))}
         </div>
       </div>
+      {cs.linha && (
+        <div className="card" style={{ marginTop: 16 }}>
+          <div className="label">Ordem da noite · do primeiro ao último</div>
+          {s.ordem.map((id, i) => {
+            const ev = cs.linha!.find((x) => x.id === id)!
+            return (
+              <div key={id} className="ev">
+                <span>{ev.h}</span>
+                <span>{ev.t}</span>
+                <button className="nsmall" disabled={i === 0} onClick={() => d({ type: 'mover', id, dir: -1 })} aria-label="Subir">
+                  ↑
+                </button>
+                <button
+                  className="nsmall"
+                  disabled={i === s.ordem.length - 1}
+                  onClick={() => d({ type: 'mover', id, dir: 1 })}
+                  aria-label="Descer"
+                >
+                  ↓
+                </button>
+              </div>
+            )
+          })}
+        </div>
+      )}
       <p style={{ marginTop: 16 }}>
         <button className="btn" disabled={!ok} onClick={() => d({ type: 'accuse' })}>
           Acusar
         </button>
       </p>
       {result}
+      {s.historico.length > 0 && (
+        <div className="card hist" style={{ marginTop: 16 }}>
+          <div className="label">Histórico de acusações</div>
+          {s.historico.map((h, i) => (
+            <p key={i}>{h}</p>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -513,6 +565,7 @@ function CaseGame({ cs, onHome, resume }: { cs: Case; onHome: () => void; resume
     if (s.investigador) ids.push('investigador')
     grantAch(ids)
     saveScore(cs.id, scoreOf(s))
+    registrarVitoria(cs.id, { startedAt: s.startedAt, tries: s.tries, hints: s.hints })
     if (CASES.every((c) => c.id === cs.id || peek(c).solved)) grantAch(['todos'])
   }, [s.res, cs.id, s.hints, s.investigador])
 

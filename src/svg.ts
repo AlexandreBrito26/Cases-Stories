@@ -276,6 +276,30 @@ export const CUTS: Record<string, Record<'intro' | 'end', CutFrame[]>> = {
       { t: 'Caso encerrado', d: 3000 },
     ],
   },
+  trem: {
+    intro: [
+      { t: 'Trem noturno, rumo ao norte. Três horas de viagem pela serra.', d: 4000 },
+      { t: 'Às 3h, a cabine 7 foi arrombada por dentro. Renato Duarte estava morto.', d: 4500 },
+      { t: 'O trem parou no meio da noite, sem autorização. Alguém desceu.', d: 4000 },
+      { t: 'Caso 006 · O Caso Trem Noturno', d: 3000 },
+    ],
+    end: [
+      { t: 'O bilhete não usado estava guardado com a conta sem assinatura.', d: 4500 },
+      { t: 'Caso encerrado', d: 3000 },
+    ],
+  },
+  silencio: {
+    intro: [
+      { t: 'A casa de vidro ficou em silêncio na noite de Lorena Vasques.', d: 4000 },
+      { t: 'O gerador desligou às pressas, e as gravações pararam de tocar.', d: 4000 },
+      { t: 'Só quem zerou todos os casos chega até aqui. Não há tutorial.', d: 4000 },
+      { t: 'Caso 007 · O Caso do Silêncio', d: 3000 },
+    ],
+    end: [
+      { t: 'Hugo tentou apagar o último som, mas a fita cortada ainda guardava a voz.', d: 4500 },
+      { t: 'Caso encerrado', d: 3000 },
+    ],
+  },
   origem: {
     intro: [
       { t: 'Seu primeiro caso. Uma joia de família sumiu da mansão Lima.', d: 4000 },

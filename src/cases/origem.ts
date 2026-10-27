@@ -85,7 +85,6 @@ export const origem: Case = {
   synopsis:
     'Seu primeiro caso. Na mansão Lima, uma joia de família desaparece durante a noite. Só uma das três pessoas da casa mentiu.',
   place: 'Mansão Lima',
-  difficulty: 1,
   bg: 'of_hal',
   suspectsLabel: 'Três pessoas estavam em casa naquela noite',
   suspects: SUS,

@@ -165,6 +165,55 @@ BASE.farol = {
   },
 }
 
+BASE.trem = {
+  track: {
+    bpm: 80,
+    beats: 4,
+    chords: [
+      [98, 146.83, 196, 246.94],
+      [87.31, 130.81, 174.61, 220],
+      [110, 164.81, 220, 261.63],
+      [98, 146.83, 196, 246.94],
+    ],
+    scale: [392, 440, 493.88, 587.33, 659.25],
+    pad: 'triangle',
+    padCut: 1000,
+    lead: 'triangle',
+    density: 0.35,
+    pulse: false,
+  },
+  rooms: {
+    vag: { bpm: 84, density: 0.5, shift: 2 },
+    cab: { bpm: 70, pad: 'sine', density: 0.2, shift: -2 },
+    pla: { bpm: 76, padCut: 1600, lead: 'sine' },
+    loc: { bpm: 96, pad: 'sawtooth', padCut: 700, pulse: true, shift: -3 },
+  },
+}
+BASE.silencio = {
+  track: {
+    bpm: 50,
+    beats: 4,
+    chords: [
+      [65.41, 98, 130.81, 164.81],
+      [58.27, 87.31, 116.54, 146.83],
+      [55, 82.41, 110, 138.59],
+      [65.41, 98, 130.81, 164.81],
+    ],
+    scale: [261.63, 293.66, 329.63, 392],
+    pad: 'sine',
+    padCut: 400,
+    lead: 'sine',
+    density: 0.12,
+    pulse: true,
+  },
+  rooms: {
+    esp: { bpm: 46, density: 0.08 },
+    por: { bpm: 52, pad: 'sawtooth', padCut: 300, shift: -4 },
+    jar: { bpm: 56, padCut: 700, density: 0.2, shift: 3 },
+    sot: { bpm: 48, pulse: false, density: 0.15 },
+  },
+}
+
 function resolve(theme: string, room: string): Track | null {
   const b = BASE[theme]
   if (!b) return null

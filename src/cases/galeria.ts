@@ -98,7 +98,6 @@ export const galeria: Case = {
   synopsis:
     'Na Galeria Serra, o colecionador Eduardo Serra é achado morto no ateliê de restauro, um dia depois de um laudo atestar a autenticidade de uma tela rara.',
   place: 'Galeria Serra',
-  difficulty: 3,
   bg: 'gal',
   suspectsLabel: 'Quatro pessoas tinham acesso ao ateliê',
   suspects: SUS,

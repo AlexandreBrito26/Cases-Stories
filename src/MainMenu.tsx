@@ -1,11 +1,13 @@
-import { useMemo, useState, type ReactNode } from 'react'
+import { useMemo, useRef, useState, type ReactNode } from 'react'
+import { exportarProgresso, importarProgresso } from './backup'
 import { CASES } from './cases'
 import { Emblem } from './Logo'
 import { StaticScene } from './Scene'
 import { getLast, peek, resetAll } from './state'
 import { DEFAULTS, type Settings } from './settings'
 import { ACHIEVEMENTS, getAch } from './achievements'
-import { textoLore } from './lore'
+import { fmtTempo, getStats } from './stats'
+import { CAPITULOS, textoLore } from './lore'
 import { getNome, setNome } from './nome'
 import type { Case } from './types'
 
@@ -100,6 +102,50 @@ function Row({ title, hint, children }: { title: string; hint?: string; children
   )
 }
 
+/** D3: estatísticas dos casos resolvidos. */
+function EstatisticasView() {
+  const st = getStats()
+  const linhas = CASES.filter((c) => st[c.id])
+  const totalRes = linhas.reduce((n, c) => n + st[c.id].resolvidos, 0)
+  const totalAc = linhas.reduce((n, c) => n + st[c.id].acusacoes, 0)
+  const totalTempo = linhas.reduce((n, c) => n + st[c.id].tempoMs, 0)
+  const totalDicas = linhas.reduce((n, c) => n + st[c.id].dicas, 0)
+  if (!linhas.length)
+    return (
+      <div className="card" style={{ marginBottom: 12 }}>
+        <div className="label">Estatísticas</div>
+        <p className="empty">Resolva um caso para ver as estatísticas aqui.</p>
+      </div>
+    )
+  return (
+    <div className="card stats" style={{ marginBottom: 12 }}>
+      <div className="label">Estatísticas</div>
+      <div className="sumgrid">
+        <div>
+          <b>{totalRes}</b>casos resolvidos
+        </div>
+        <div>
+          <b>{totalAc ? Math.round((totalRes / totalAc) * 100) : 0}%</b>taxa de acerto
+        </div>
+        <div>
+          <b>{fmtTempo(totalTempo / totalRes)}</b>tempo médio
+        </div>
+        <div>
+          <b>{(totalDicas / totalRes).toFixed(1)}</b>dicas por caso
+        </div>
+      </div>
+      {linhas.map((c) => {
+        const x = st[c.id]
+        return (
+          <p key={c.id} className="hist">
+            <b>{c.title}</b>: {x.resolvidos}× · {fmtTempo(x.tempoMs / x.resolvidos)} · {x.acusacoes ? Math.round((x.resolvidos / x.acusacoes) * 100) : 0}% de acerto · {(x.dicas / x.resolvidos).toFixed(1)} dicas
+          </p>
+        )
+      })}
+    </div>
+  )
+}
+
 function Back({ onClick, title }: { onClick: () => void; title: string }) {
   return (
     <div className="nhead">
@@ -126,8 +172,7 @@ function CaseCard({ cs, onOpen }: { cs: Case; onOpen: (id: string) => void }) {
       <span className="nfoot">
         <span className={'nchip ' + st}>{label}</span>
         <span className="nmeta">
-          {cs.place} · {'●'.repeat(cs.difficulty)}
-          {'○'.repeat(3 - cs.difficulty)}
+          {cs.place}
         </span>
       </span>
     </button>
@@ -144,6 +189,8 @@ interface Props {
 
 export function MainMenu({ view, setView, onOpen, settings, setSettings }: Props) {
   const [confirm, setConfirm] = useState(false)
+  const [msgImport, setMsgImport] = useState('')
+  const arquivoRef = useRef<HTMLInputElement>(null)
   const [nome, setNomeAtual] = useState(getNome)
   const [rascunho, setRascunho] = useState(nome)
   const set = (patch: Partial<Settings>) => setSettings({ ...settings, ...patch })
@@ -246,6 +293,22 @@ export function MainMenu({ view, setView, onOpen, settings, setSettings }: Props
                   {textoLore(nome).map((t, i) => (
                     <p key={i}>{t}</p>
                   ))}
+                  {CAPITULOS.map((cap) => {
+                    const resolvidos = CASES.filter((c) => peek(c).solved).length
+                    const aberto = resolvidos >= cap.precisa
+                    return (
+                      <section key={cap.n}>
+                        <div className="capitulo">
+                          Capítulo {cap.n} · {aberto ? cap.titulo : 'bloqueado'}
+                        </div>
+                        {aberto ? (
+                          cap.paragrafos.map((t, i) => <p key={i}>{t.replace('{nome}', nome)}</p>)
+                        ) : (
+                          <p className="empty">Resolva {cap.precisa} casos para abrir este capítulo.</p>
+                        )}
+                      </section>
+                    )
+                  })}
                 </>
               ) : (
                 <p className="empty">Esta história ainda está fechada. Resolva o Caso 000 para abri-la.</p>
@@ -258,6 +321,7 @@ export function MainMenu({ view, setView, onOpen, settings, setSettings }: Props
           <>
             <Back onClick={() => setView('main')} title="Conquistas" />
             <section className="nlist" aria-label="Conquistas">
+              <EstatisticasView />
               {ACHIEVEMENTS.map((a) => {
                 const ok = getAch().includes(a.id)
                 return (
@@ -278,9 +342,19 @@ export function MainMenu({ view, setView, onOpen, settings, setSettings }: Props
           <>
             <Back onClick={() => setView('main')} title="Casos" />
             <section className="nlist" aria-label="Casos">
-              {CASES.map((c) => (
-                <CaseCard key={c.id} cs={c} onOpen={(id) => onOpen(id, false)} />
-              ))}
+              {CASES.map((c) => {
+                const bloqueado = !!c.desafio && !CASES.filter((x) => !x.desafio).every((x) => peek(x).solved)
+                if (bloqueado)
+                  return (
+                    <div key={c.id} className="ncase lock lock-desafio" aria-disabled="true">
+                      <span className="nno">Caso nº {c.no} · Desafio</span>
+                      <span className="ntitle">Fechado</span>
+                      <span className="redact" style={{ width: '90%' }} />
+                      <span className="nchip new">Zere os outros casos</span>
+                    </div>
+                  )
+                return <CaseCard key={c.id} cs={c} onOpen={(id) => onOpen(id, false)} />
+              })}
               <div className="ncase lock" aria-disabled="true">
                 <span className="nno">Caso nº {String(CASES.length).padStart(3, '0')}</span>
                 <span className="ntitle">Futuros casos</span>
@@ -350,6 +424,33 @@ export function MainMenu({ view, setView, onOpen, settings, setSettings }: Props
             </section>
             <section className="osec">
               <h3>Jogo</h3>
+              <Row title="Exportar progresso" hint="Baixa um arquivo com todos os casos e conquistas">
+                <button className="nsmall" onClick={exportarProgresso}>
+                  Exportar
+                </button>
+              </Row>
+              <Row title="Importar progresso" hint={msgImport || 'Carrega um arquivo exportado antes'}>
+                <button className="nsmall" onClick={() => arquivoRef.current?.click()}>
+                  Importar
+                </button>
+                <input
+                  ref={arquivoRef}
+                  type="file"
+                  accept="application/json,.json"
+                  hidden
+                  onChange={(e) => {
+                    const f = e.target.files?.[0]
+                    if (!f) return
+                    importarProgresso(f)
+                      .then((n) => {
+                        setMsgImport(`${n} registros importados. Recarregando…`)
+                        setTimeout(() => location.reload(), 600)
+                      })
+                      .catch(() => setMsgImport('Arquivo inválido.'))
+                    e.target.value = ''
+                  }}
+                />
+              </Row>
               <Row title="Restaurar opções" hint="Volta som e gráficos ao padrão">
                 <button className="nsmall" onClick={() => setSettings(DEFAULTS)}>
                   Restaurar

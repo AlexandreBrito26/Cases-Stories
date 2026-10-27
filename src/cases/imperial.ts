@@ -117,7 +117,6 @@ export const imperial: Case = {
   synopsis:
     'Noite de estreia no Teatro Imperial. O diretor é achado morto sob a varanda técnica. Parecia acidente, até alguém conferir os números da noite.',
   place: 'Teatro Imperial',
-  difficulty: 3,
   bg: 'pal',
   suspectsLabel: 'Quatro pessoas conheciam os bastidores',
   suspects: SUS,

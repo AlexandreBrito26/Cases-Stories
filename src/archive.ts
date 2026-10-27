@@ -30,6 +30,18 @@ export const ARQUIVO: Record<string, Record<string, string>> = {
     anc: 'O ancoradouro recebe os barcos de carga que passam pela costa. Sem sinal do farol, as embarcações da noite seguem por uma rota perigosa.',
     dep: 'O depósito guarda óleo, combustível e caixas que chegam sem nota fiscal. Um rádio sintonizado numa frequência de navio fica sempre ligado.',
   },
+  trem: {
+    vag: 'O vagão-restaurante serve jantar até as 23h. As taças são lavadas por um funcionário, e um armário de vidro guarda as que estão fora de uso.',
+    cab: 'As cabines do trem são pequenas e ficam trancadas por dentro. Cada passageiro recebe uma chave, e a da cabine 7 não foi devolvida.',
+    pla: 'A parada de madrugada é só para cargas e alguns passageiros. Não há funcionário na plataforma depois da meia-noite.',
+    loc: 'A locomotiva registra cada parada em um diário de bordo. Uma parada sem autorização aparece como erro no painel do maquinista.',
+  },
+  silencio: {
+    esp: 'A sala de espelhos foi usada para ensaios com gravação. Os espelhos cobrem as paredes para que a acústica fique controlada.',
+    por: 'O porão guarda o gerador e as caixas de som que alimentavam as gravações noturnas. Só o zelador tinha a chave do gerador.',
+    jar: 'O jardim de inverno é fechado com vidro e aquecido. Plantas sensíveis ao frio ficam ali, e a estufa é aberta todas as noites.',
+    sot: 'No sótão ficam os arquivos de fitas magnéticas. Cada fita tem uma etiqueta com a data da gravação, e algumas faltam.',
+  },
   galeria: {
     gal: 'A galeria expõe apenas obras autenticadas. Cada quadro tem uma ficha com histórico de proprietários, e uma delas nunca teve procedência clara.',
     res: 'O ateliê de restauro é fechado por dentro. Os restauradores usam solventes fortes, e o cheiro fica preso no ambiente por horas.',

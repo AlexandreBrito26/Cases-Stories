@@ -5,7 +5,7 @@ export interface Suspect {
   name: string
   role: string
   ini: string
-  qs: [string, string][]
+  qs: [string, string, string?][] // 3º item: id da evidência que libera a pergunta
   re: Record<string, [string] | [string, Flag]>
 }
 
@@ -33,7 +33,6 @@ export interface Case {
   tagline: string
   synopsis: string
   place: string
-  difficulty: 1 | 2 | 3
   bg: string // cena usada como fundo do menu
   suspectsLabel: string
   suspects: Suspect[]
@@ -43,5 +42,7 @@ export interface Case {
   mot: string[]
   win: { s: string; m: number; r: number; text: string[] }
   ranks: [number, string][]
+  linha?: { id: string; h: string; t: string }[] // ordem correta da noite
+  desafio?: boolean // só abre ao zerar os demais casos; pistas escondidas
   tutorial?: Partial<Record<'cenas' | 'susp' | 'quadro' | 'acusar', string>>
 }

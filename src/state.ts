@@ -37,9 +37,14 @@ export interface GameState {
   hints: number
   hint: string | null
   investigador: boolean
+  ordem: string[]
+  historico: string[]
+  startedAt: number
 }
 
 export const HINT_MAX = 3
+/** Acusações erradas livres de penalidade. Depois, cada erro custa pontos. */
+export const TENTATIVAS_LIVRES = 10
 
 export type Action =
   | { type: 'start' }
@@ -66,6 +71,7 @@ export type Action =
   | { type: 'reset' }
   | { type: 'hint' }
   | { type: 'modo' }
+  | { type: 'mover'; id: string; dir: -1 | 1 }
 
 const fresh = (cs: Case): GameState => ({
   started: false,
@@ -86,6 +92,9 @@ const fresh = (cs: Case): GameState => ({
   hints: 0,
   hint: null,
   investigador: false,
+  ordem: cs.linha ? [...cs.linha].reverse().map((x) => x.id) : [],
+  historico: [],
+  startedAt: 0,
 })
 
 function init(cs: Case): GameState {
@@ -102,7 +111,7 @@ function init(cs: Case): GameState {
   return s
 }
 
-const newGame = (cs: Case, extra: Partial<GameState>): GameState => ({ ...fresh(cs), started: true, menu: false, ...extra })
+const newGame = (cs: Case, extra: Partial<GameState>): GameState => ({ ...fresh(cs), started: true, menu: false, startedAt: Date.now(), ...extra })
 
 export const makeReducer = (cs: Case) => (s: GameState, a: Action): GameState => {
   switch (a.type) {
@@ -125,6 +134,8 @@ export const makeReducer = (cs: Case) => (s: GameState, a: Action): GameState =>
     case 'ask': {
       const p = cs.suspects.find((x) => x.id === s.sel)
       if (!p) return s
+      const req = p.qs[a.i][2]
+      if (req && !s.clues.includes(req)) return s
       const e: LogEntry = { k: 'q' + a.i, q: p.qs[a.i][0], a: p.qs[a.i][1] }
       return { ...s, log: { ...s.log, [p.id]: [...(s.log[p.id] ?? []), e] } }
     }
@@ -147,8 +158,24 @@ export const makeReducer = (cs: Case) => (s: GameState, a: Action): GameState =>
       return { ...s, acc: { ...s.acc, [a.k]: a.v } }
     case 'accuse': {
       const { s: who, m, r } = s.acc
-      if (who === cs.win.s && m === cs.win.m && r === cs.win.r) return { ...s, res: 'win', cut: { id: 'end', i: 0 } }
-      return { ...s, res: 'lose', tries: s.tries + 1 }
+      const ordemOk = !cs.linha || s.ordem.join() === cs.linha.map((x) => x.id).join()
+      const erros = [
+        who !== cs.win.s ? 'culpado' : null,
+        m !== cs.win.m ? 'método' : null,
+        r !== cs.win.r ? 'motivo' : null,
+        !ordemOk ? 'ordem da noite' : null,
+      ].filter(Boolean)
+      if (!erros.length) return { ...s, res: 'win', cut: { id: 'end', i: 0 } }
+      const reg = `Tentativa ${s.tries + 1}: errado em ${erros.join(', ')}.`
+      return { ...s, res: 'lose', tries: s.tries + 1, historico: [...s.historico, reg].slice(-20) }
+    }
+    case 'mover': {
+      const i = s.ordem.indexOf(a.id)
+      const j = i + a.dir
+      if (i < 0 || j < 0 || j >= s.ordem.length) return s
+      const ord = [...s.ordem]
+      ;[ord[i], ord[j]] = [ord[j], ord[i]]
+      return { ...s, ordem: ord }
     }
     case 'cont':
       return { ...s, menu: false }
