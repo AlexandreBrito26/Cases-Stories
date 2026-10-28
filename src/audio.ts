@@ -15,6 +15,20 @@ function init() {
   music = ctx.createGain()
   music.gain.value = 0
   music.connect(master)
+  // Reverb suave (resposta ao impulso sintética) para dar ambiente ao piano
+  const irLen = Math.floor(ctx.sampleRate * 2.8)
+  const ir = ctx.createBuffer(2, irLen, ctx.sampleRate)
+  for (let ch = 0; ch < 2; ch++) {
+    const data = ir.getChannelData(ch)
+    for (let i = 0; i < irLen; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / irLen, 2.5)
+  }
+  const verb = ctx.createConvolver()
+  verb.buffer = ir
+  const wet = ctx.createGain()
+  wet.gain.value = 0.4
+  music.connect(verb)
+  verb.connect(wet)
+  wet.connect(master)
   const buf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate)
   const d = buf.getChannelData(0)
   for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1
@@ -23,10 +37,10 @@ function init() {
   src.loop = true
   const hp = ctx.createBiquadFilter()
   hp.type = 'highpass'
-  hp.frequency.value = 900
+  hp.frequency.value = 500
   const lp = ctx.createBiquadFilter()
   lp.type = 'lowpass'
-  lp.frequency.value = 7000
+  lp.frequency.value = 3200
   rain = ctx.createGain()
   rain.gain.value = 0
   src.connect(hp)
@@ -39,7 +53,7 @@ function init() {
 function apply() {
   if (!ctx) return
   master.gain.setTargetAtTime(cur.vol / 100, ctx.currentTime, 0.05)
-  rain.gain.setTargetAtTime(cur.ambient ? 0.1 : 0, ctx.currentTime, 0.4)
+  rain.gain.setTargetAtTime(cur.ambient ? 0.05 : 0, ctx.currentTime, 0.4)
   music.gain.setTargetAtTime(cur.music ? (cur.musicVol / 100) * 0.8 : 0, ctx.currentTime, 0.4)
 }
 

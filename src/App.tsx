@@ -630,6 +630,12 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    if (cs) return
+    playTrack('menu', '')
+    return stopTrack
+  }, [cs])
+
+  useEffect(() => {
     document.documentElement.dataset.case = cs ? cs.theme : 'home'
     window.scrollTo(0, 0)
   }, [cs, view])

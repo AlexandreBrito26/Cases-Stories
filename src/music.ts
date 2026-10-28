@@ -95,6 +95,26 @@ const BASE: Record<string, { track: Track; rooms: Record<string, Room> }> = {
   },
 }
 
+BASE.menu = {
+  track: {
+    bpm: 56,
+    beats: 4,
+    chords: [
+      [130.81, 196, 261.63, 329.63], // C
+      [110, 164.81, 220, 261.63], // Am
+      [87.31, 130.81, 174.61, 220], // F
+      [98, 146.83, 196, 246.94], // G
+    ],
+    scale: [523.25, 587.33, 659.25, 783.99, 880],
+    pad: 'sine',
+    padCut: 1200,
+    lead: 'sine',
+    density: 0.3,
+    pulse: false,
+  },
+  rooms: {},
+}
+
 BASE.origem = {
   track: {
     bpm: 66,
@@ -247,45 +267,55 @@ function osc(ctx: AudioContext, out: AudioNode, type: OscillatorType, f: number,
   o.stop(t + dur + 0.05)
 }
 
+/** Nota de piano suave (parciais senoidais com decaimento natural, sem ataque áspero). */
+function piano(ctx: AudioContext, out: AudioNode, f: number, t: number, dur: number, peak: number) {
+  const parts: [number, number, number][] = [
+    [1, 1, 1],
+    [2, 0.32, 0.55],
+    [3, 0.1, 0.35],
+    [4, 0.04, 0.2],
+  ]
+  for (const [mult, amp, life] of parts) {
+    const fr = f * mult * (1 + 0.0003 * mult * mult)
+    if (fr > 4000) continue
+    const o = ctx.createOscillator()
+    const g = ctx.createGain()
+    const d = dur * life
+    o.type = 'sine'
+    o.frequency.setValueAtTime(fr, t)
+    g.gain.setValueAtTime(0.0001, t)
+    g.gain.exponentialRampToValueAtTime(peak * amp, t + 0.012)
+    g.gain.exponentialRampToValueAtTime(0.0001, t + d)
+    o.connect(g)
+    g.connect(out)
+    o.start(t)
+    o.stop(t + d + 0.05)
+  }
+}
+
 function scheduleBeat(ctx: AudioContext, out: GainNode, tr: Track, n: number, t: number, beat: number) {
   const bar = Math.floor(n / tr.beats)
   const b = n % tr.beats
   const chord = tr.chords[bar % tr.chords.length]
-  const barDur = beat * tr.beats
 
-  if (b === 0) {
-    // Pad: acorde sustentado no início de cada compasso
-    const filter = ctx.createBiquadFilter()
-    filter.type = 'lowpass'
-    filter.frequency.value = tr.padCut
-    filter.connect(out)
-    for (const f of chord) {
-      const o = ctx.createOscillator()
-      const g = ctx.createGain()
-      o.type = tr.pad
-      o.frequency.setValueAtTime(f, t)
-      g.gain.setValueAtTime(0.0001, t)
-      g.gain.exponentialRampToValueAtTime(0.025, t + 1.2)
-      g.gain.exponentialRampToValueAtTime(0.0001, t + barDur + 0.8)
-      o.connect(g)
-      g.connect(filter)
-      o.start(t)
-      o.stop(t + barDur + 1)
-    }
-    // Baixo uma oitava abaixo da raiz
-    osc(ctx, out, 'sine', chord[0] / 2, t, barDur * 0.95, 0.12, 0.05)
+  // Baixo: raiz do acorde, grave e macio, no início de cada compasso
+  if (b === 0) piano(ctx, out, chord[0], t, 5, 0.1)
+
+  // Arpejo lento do acorde (uma oitava acima), em tempos alternados se o andamento for rápido
+  const step2 = tr.bpm > 75 ? 2 : 1
+  if (b % step2 === 0) {
+    const note = chord[(b / step2) % chord.length]
+    piano(ctx, out, note * 2, t, 3.2, 0.055)
   }
 
-  if (tr.pulse && (b === 0 || b === 2)) {
-    // Batida de coração: tensão constante
-    osc(ctx, out, 'sine', 55, t, 0.25, 0.09, 0.02)
-  }
-
-  if (Math.random() < tr.density) {
+  // Melodia esparsa, sempre na escala do cômodo
+  if (Math.random() < tr.density * 0.7) {
     const f = tr.scale[Math.floor(Math.random() * tr.scale.length)]
-    const len = beat * (Math.random() < 0.5 ? 1 : 2)
-    osc(ctx, out, tr.lead, f, t + (Math.random() * beat) / 3, len, 0.045, 0.03)
+    piano(ctx, out, f, t + (Math.random() * beat) / 3, 3.5, 0.05)
   }
+
+  // Tensão: pulso grave bem discreto (sem timbre de sintetizador)
+  if (tr.pulse && b === 0) osc(ctx, out, 'sine', 55, t, 0.5, 0.03, 0.05)
 }
 
 let group: GainNode | null = null
